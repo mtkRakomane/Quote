@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Billing</title>
+  
+</head>
+<body>
+    <div clas="form-container">
+    <h1>Update Billing Entry for <%= user.name %></h1>
+
+    <form action="/updateBilling/<%= user._id %>/<%= billingIndex %>" method="POST">
+        <!-- Billing Title -->
+        <div>
+            <label for="bill_title">Billing Title:</label>
+            <input type="text" id="bill_title" name="bill_title" value="<%= billing.bill_title %>" required>
+        </div>
+
+        <h4>Items:</h4>
+
+        <!-- Iterate over each item and render corresponding input fields -->
+        <% billing.items.forEach(function(item, itemIndex) { %>
+            <div>
+                <label for="descriptions <%= itemIndex %>">Description:</label>
+                <input type="text" id="descriptions<%= itemIndex %>" name="items[<%= itemIndex %>][descriptions]" value="<%= item.descriptions %>" required>
+            </div>
+            <div>
+                <label for="install_difficulty_<%= itemIndex %>">Install Difficulty:</label>
+                <input type="text" id="install_difficulty_<%= itemIndex %>" name="items[<%= itemIndex %>][install_difficulty]" value="<%= item.install_difficulty %>" required>
+            </div>
+            <div>
+                <label for="sla_mla_<%= itemIndex %>">SLA/MLA:</label>
+                <input type="text" id="sla_mla_<%= itemIndex %>" name="items[<%= itemIndex %>][sla_mla]" value="<%= item.sla_mla %>" required>
+            </div>
+            <div>
+                <label for="maintain_visit_<%= itemIndex %>">Maintenance Visit:</label>
+                <input type="text" id="maintain_visit_<%= itemIndex %>" name="items[<%= itemIndex %>][maintain_visit]" value="<%= item.maintain_visit %>" required>
+            </div>
+            <div>
+                <label for="validate_num_days_<%= itemIndex %>">Validate Num Days:</label>
+                <input type="text" id="validate_num_days_<%= itemIndex %>" name="items[<%= itemIndex %>][validate_num_days]" value="<%= item.validate_num_days %>" required>
+            </div>
+            <div>
+                <label for="stock_code_<%= itemIndex %>">Stock Code:</label>
+                <input type="text" id="stock_code_<%= itemIndex %>" name="items[<%= itemIndex %>][stock_code]" value="<%= item.stock_code %>" required>
+            </div>
+            <div>
+                <label for="stock_qty_<%= itemIndex %>">Stock Qty:</label>
+                <input type="number" id="stock_qty_<%= itemIndex %>" name="items[<%= itemIndex %>][stock_qty]" value="<%= item.stock_qty %>" required>
+            </div>
+            <div>
+                <label for="unit_cost_<%= itemIndex %>">Unit Cost:</label>
+                <input type="text" id="unit_cost_<%= itemIndex %>" name="items[<%= itemIndex %>][unit_cost]" value="<%= item.unit_cost %>" required>
+            </div>
+            <div>
+                <label for="product_type_<%= itemIndex %>">Product Type:</label>
+                <input type="text" id="product_type_<%= itemIndex %>" name="items[<%= itemIndex %>][product_type]" value="<%= item.product_type %>" required>
+            </div>
+            <div>
+                <label for="equip_margin_<%= itemIndex %>">Equip Margin:</label>
+                <input type="text" id="equip_margin_<%= itemIndex %>" name="items[<%= itemIndex %>][equip_margin]" value="<%= item.equip_margin %>" required>
+            </div>
+            <div>
+                <label for="labour_margin_<%= itemIndex %>">Labour Margin:</label>
+                <input type="text" id="labour_margin_<%= itemIndex %>" name="items[<%= itemIndex %>][labour_margin]" value="<%= item.labour_margin %>" required>
+            </div>
+            <div>
+                <label for="labour_hrs_<%= itemIndex %>">Labour Hours:</label>
+                <input type="text" id="labour_hrs_<%= itemIndex %>" name="items[<%= itemIndex %>][labour_hrs]" value="<%= item.labour_hrs %>" required>
+            </div>
+            <div>
+                <label for="maintenance_hrs_<%= itemIndex %>">Maintenance Hours:</label>
+                <input type="text" id="maintenance_hrs_<%= itemIndex %>" name="items[<%= itemIndex %>][maintenance_hrs]" value="<%= item.maintenance_hrs %>" required>
+            </div>
+            <div>
+                <label for="supplier_<%= itemIndex %>">Supplier:</label>
+                <input type="text" id="supplier_<%= itemIndex %>" name="items[<%= itemIndex %>][supplier]" value="<%= item.supplier %>" required>
+            </div>
+            <hr> <!-- Separate each item visually -->
+        <% }) %>
+
+        <!-- Submit Button -->
+        <button type="submit">Update Billing</button>
+    </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel ="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <h1 id="quote">Quote Register</h1>
+    
+        <form action="/signup" method="post">
+            <div class ="row">
+                <div class="col-md-6">
+                    <div class="card-sidebar">
+                        <div class="card-body">
+
+                            <h2>Sale's Person Details</h2>
+
+                            <div class= "form-group">
+                                <label for ="ref_num">Reference Number: </label>
+                                <input type="text" name="ref_num" id="ref_num" placeholder="Refference Number" required autocomplete="off"> </input>
+                                </div>
+                                
+                        <div class="form-group">
+                            <label for="name">Sale Person:</label>
+                            <select id="name" name="name" required>
+                                <option value="" disabled selected>Select a Sale Person</option>
+                                <% salesPersons.forEach(person => { %>
+                                    <option value="<%= person.Name %>"><%= person.Name%></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Sale Email Address:</label>
+                           <input type="text" name="email" id="email" placeholder="Sale Email Address" required autocomplete="off"></input>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cell">Sale Person Contact Number:</label>
+                           <input type="text" name="cell" id="cell" placeholder="Sale Person Contact Number" required autocomplete="off"></input>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Sale Person Role:</label>
+                            <input type="text" name="role" id="role" placeholder="Sale Person Role" required autocomplete="off"></input>
+                        </div>
+
+                        <h3>Customer's Details</h3>
+
+                                    <div class= "form-group">
+                                        <label for ="customer_name">Customer Name:  </label>
+                                        <input type="text" name="customer_name" id="customer_name" placeholder="Customer Name" required autocomplete="off"> </input>
+                                        </div>
+
+                                        <div class= "form-group">
+                                            <label for ="customer_call_person">Customer Contact Person: </label>
+                                            <input type="tel" name="customer_call_person" id="customer_call_person" placeholder="Customer Contact Person" pattern="[0-9]{10}"  autocomplete="off"> </input>
+                                            <small>Enter a 10-digit phone number (numbers only).</small>
+                                            </div>
+
+                                            <div class= "form-group">
+                                                <label for ="customer_email">Customer Email Address: </label>
+                                                <input type="email" name="customer_email" id="customer_email" placeholder="Customer Email Address" required autocomplete="off"> </input>
+                                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <hr>                  
+            <br>
+            <div class ="col-md-6">
+                <div class="card-right">
+                    <div class="card-body">
+
+                        <h4>Billing</h4>
+                        <hr>
+                        <div class= "form-group">
+                            <label for ="bill_title">Bill Title: </label>
+                            <input type="text" name="bill_title" id="bill_title" placeholder="Bill Title:" required autocomplete="off"> </input>
+                            </div>
+
+                            <hr>
+                            <h5>Items</h5>
+
+                            <div class= "form-group">
+                                <label for="descriptions"> Description:</label>
+                                <input type="text" name="descriptions" id="descriptions" placeholder="Description" required autocomplete="off"> </input>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="install_difficulty">Installation Difficulty Factor:</label>
+                                <select id="install_difficulty" name="install_difficulty" required>
+                                    <option value="" disabled selected>Select a Installation Difficulty Factor</option>
+                                    <% installDifficultyTypes.forEach(type => { %>
+                                        <option value="<%= type.install_difficulty %>"><%= type.install_difficulty %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sla_mla">SLA & MSS Period in Months:</label>
+                                <select id="sla_mla" name="sla_mla" required>
+                                    <option value="" disabled selected>Select a SLA & MSS</option>
+                                    <% slaMlaTypes.forEach(type => { %>
+                                        <option value="<%= type.sla_mla %>"><%= type.sla_mla %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="maintain_visit">Number of Preventative Maint. Visits per annum:</label>
+                                <input type="text" name="maintain_visit" id="maintain_visit" placeholder="Number of Preventative Maint. Visits per annum" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="validate_num_days">Proposal Validity in Days:</label>
+                                <select id="validate_num_days" name="validate_num_days" required>
+                                    <option value="" disabled selected>Select a Validity in days</option>
+                                    <% validateNumTypes.forEach(type => { %>
+                                        <option value="<%= type.validate_num_days %>"><%= type.validate_num_days %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                        
+                        <div class= "form-group">
+                            <label for ="stock_code">Stock Code: </label>
+                            <input type="text" name="stock_code" id="stock_code" placeholder="Stock Code:" required autocomplete="off"> </input>
+                            </div>
+                            <div class= "form-group">
+                                <label for ="stock_qty">Stock Quantity: </label>
+                                <input type="text" name="stock_qty" id="stock_qty" placeholder="Stock Quantity:" required autocomplete="off"> </input>
+                                </div>
+                                <div class= "form-group">
+                                    <label for ="unit_cost">Unit Cost: </label>
+                                    <input type="text" name="unit_cost" id="unit_cost" placeholder="Unit Cost:" required autocomplete="off"> </input>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="product_type">Select Product Type:</label>
+                                        <select id="product_type" name="product_type" required>
+                                            <option value="" disabled selected>Select a Product</option>
+                                            <% productTypes.forEach(type => { %>
+                                                <option value="<%= type.Description %>"><%= type.Description %></option>
+                                            <% }); %>
+                                        </select>
+                                    </div>
+                                        <div class= "form-group">
+                                            <label for ="equip_margin">Equipment Margin: </label>
+                                            <input type="text" name="equip_margin" id="equip_margin" placeholder="Equipment Margin:" required autocomplete="off"> </input>
+                                            </div>
+                                            <div class= "form-group">
+                                                <label for ="labour_margin">Labour Margin: </label>
+                                                <input type="text" name="labour_margin" id="labour_margin" placeholder="Labour Margin:" required autocomplete="off"> </input>
+                                                </div>
+                                                <div class= "form-group">
+                                                    <label for ="labour_hrs">Labour Hours: </label>
+                                                    <input type="text" name="labour_hrs" id="labour_hrs" placeholder="Labour Hours:" required autocomplete="off"> </input>
+                                                    </div>
+                                                    <div class= "form-group">
+                                                        <label for ="maintenance_hrs">Maintenance Hours: </label>
+                                                        <input type="text" name="maintenance_hrs" id="maintenance_hrs" placeholder="Maintenance Hours:" required autocomplete="off"> </input>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="supplier">Supplier:</label>
+                                                            <select id="supplier" name="supplier" required>
+                                                                <option value="" disabled selected>Select a supplier</option>
+                                                                <% supplyTypes.forEach(type => { %>
+                                                                    <option value="<%= type.supplier %>"><%= type.supplier %></option>
+                                                                <% }); %>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="options">Include the following modules:</label>
+                                                            <div>
+                                                              <input type="checkbox" name="options" value="MSS"> MSS
+                                                              <input type="checkbox" name="options" value="SLA"> SLA
+                                                              <input type="checkbox" name="options" value="nom"> Mon & Resp
+                                                              <input type="checkbox" name="options" value="video"> VideoFied Mon
+                                                              <input type="checkbox" name="options" value="live"> Scarface Live 
+                                                            </div>
+                                                          </div>
+                                                          
+                    </div>
+                </div>
+            </div>
+
+                <button type="submit" class="submit-btn">signup</button>
+                
+                </form>
+                </div>
+</body>
+</html>

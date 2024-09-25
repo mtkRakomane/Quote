@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+
+</head>
+<body>
+    <body>
+        <h1>Welcome, <%= user.name %></h1>
+    
+        <div class="user-details">
+            <h2>Details</h2>
+            <ul>
+                <li><strong>Reference Number:</strong> <%= user.ref_num %></li>
+                <li><strong>Description:</strong> <%= user.descriptions %></li>
+                <li><strong>Email:</strong> <%= user.email %></li>
+                <li><strong>Cell:</strong> <%= user.cell %></li>
+                <li><strong>Role:</strong> <%= user.role %></li>
+                <li><strong>Customer Name:</strong> <%= user.customer_name %></li>
+                <li><strong>Customer Call Person:</strong> <%= user.customer_call_person %></li>
+                <li><strong>Customer Email:</strong> <%= user.customer_email %></li>
+            </ul>
+        </div>
+    
+        <div class="billing-section">
+            <h2>Billing Information</h2>
+    
+            <% if (billing.length > 0) { %>
+                <% billing.forEach(function(bill, index) { %>
+                    <div class="billing-entry">
+                        <h3>Billing Title: <%= bill.bill_title %></h3>
+    
+                        <h4>Items:</h4>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Install Difficulty</th>
+                                    <th>SLA/MLA</th>
+                                    <th>Maintenance Visit</th>
+                                    <th>Validate Num Days</th>
+                                    <th>Stock Code</th>
+                                    <th>Stock Qty</th>
+                                    <th>Unit Cost</th>
+                                    <th>Product Type</th>
+                                    <th>Equip Margin</th>
+                                    <th>Labour Margin</th>
+                                    <th>Labour Hours</th>
+                                    <th>Maintenance Hours</th>
+                                    <th>Supplier</th>
+                                    <th>Actions</th> <!-- New column for delete button -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% bill.items.forEach(function(item, itemIndex) { %>
+                                    <tr>
+                                        <td><%= item.descriptions %></td>
+                                        <td><%= item.install_difficulty %></td>
+                                        <td><%= item.sla_mla %></td>
+                                        <td><%= item.maintain_visit %></td>
+                                        <td><%= item.validate_num_days %></td>
+                                        <td><%= item.stock_code %></td>
+                                        <td><%= item.stock_qty %></td>
+                                        <td><%= item.unit_cost %></td>
+                                        <td><%= item.product_type %></td>
+                                        <td><%= item.equip_margin %></td>
+                                        <td><%= item.labour_margin %></td>
+                                        <td><%= item.labour_hrs %></td>
+                                        <td><%= item.maintenance_hrs %></td>
+                                        <td><%= item.supplier %></td>
+                                        <!-- Button to delete an individual item -->
+                                        <td>
+                                            <form action="/deleteItem/<%= user._id %>/<%= index %>/<%= itemIndex %>" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to Delete this item?');">
+                                                <button type="submit" class="delete-button">Delete Item</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+    
+                        <!-- Button to update billing entry -->
+                        <form action="/updateBilling/<%= user._id %>/<%= index %>" method="GET" style="display:inline" onsubmit="return confirm('Are you sure you want to Update this item?');">
+                            <button type="submit" class="update-button">Update Billing Entry</button>
+                        </form>
+    
+                        <!-- Button to delete the entire billing entry -->
+                        <form action="/deleteBilling/<%= user._id %>/<%= index %>" method="POST" style="display:inline" onsubmit="return confirm('Are you sure you want to Delete this item?');">
+                            <button type="submit" class="delete-button">Delete Billing Entry</button>
+                        </form>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No billing information found.</p>
+            <% } %>
+        </div>
+        
+        <div class="button-container">
+            <form action="/addQuote" method="get"  style="display:inline" onsubmit="return confirm('Are you sure you want to AddQuote/Item this item?');">
+                <p>Want to Add Quote? <button type="submit">Add Quote/Items</button></p>
+            </form> 
+
+            <form action="/printAllBilling" method="GET"  style="display:inline" onsubmit="return confirm('Are you sure you want to Print this Quote?');">
+                <button type="submit" class="print-all-button">Print All Billing Information</button>
+            </form>
+        </div>  
+
+</body>
+</html>
+
