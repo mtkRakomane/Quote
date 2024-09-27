@@ -1,39 +1,37 @@
 /* General body styling */
 body {
   font-family: Arial, sans-serif;
-  background-color:#333;
+  background-color: black; /* Lightened background for better contrast */
   margin: 0;
   padding: 0;
-  
 }
 
 /* Form container styling */
 .form-container {
   width: 80%;
-  height: 100%;
+  height: auto; /* Adjust height for flexibility */
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: grey;
+  background-color: #e0f7fa; /* Change to white for better readability */
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s');
-  background-size: cover;
-  background-position: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slightly larger shadow */
 }
-.container{
+
+.container {
   width: 80%;
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: lightblue;
+  background-color: #e0f7fa; /* Lighter background for contrast */
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 h1 {
   text-align: center;
   color: #333;
+  margin-bottom: 20px; /* Added margin for better spacing */
 }
 
 h2, h3, h4, h5 {
@@ -55,13 +53,14 @@ h2, h3, h4, h5 {
   background-color: #fafafa;
   border-radius: 8px;
   padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.form-group, .form-goup {
+.form-group {
   margin-bottom: 15px;
 }
 
-.form-group label, .form-goup label {
+.form-group label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
@@ -70,10 +69,15 @@ h2, h3, h4, h5 {
 
 input[type="text"], input[type="tel"], input[type="email"], select {
   width: 100%;
-  padding: 10px;
+  padding: 12px; /* Increased padding for better usability */
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  transition: border-color 0.3s ease; /* Transition for input focus */
+}
+
+input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus, select:focus {
+  border-color: #007bff; /* Highlight border on focus */
 }
 
 input::placeholder {
@@ -90,15 +94,16 @@ input::placeholder {
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform */
 }
 
 .submit-btn:hover {
   background-color: #0056b3;
+  transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
 select {
-  height: 40px;
+  height: 45px; /* Increased height for better usability */
 }
 
 small {
@@ -132,21 +137,19 @@ small {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transition */
 }
 
 .button-container button:hover, .button-container a:hover {
   background-color: #0056b3;
+  transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
-.button-container a {
-  display: inline-block;
-  padding: 10px 15px;
-}
-
-.terms {
+.terms, .signature {
   font-size: 10px; 
   font-style: italic;
 }
+
 .term {
   margin-bottom: 5px; 
 }
@@ -157,10 +160,9 @@ small {
 }
 
 .image-text-container img {
-  max-width: 150px; /* Adjust the image size */
+  max-width: 150px; 
   max-height: 200px;
-  margin-right: 100px; /* Space between the image and text */
-  
+  margin-right: 20px; /* Reduced margin for better alignment */
 }
 
 .text-container {
@@ -169,13 +171,30 @@ small {
 
 .text-container p {
   text-align: center;
-  font-size: 9px; 
+  font-size: 15px; 
   margin: 2px 0; 
-  color:#0056b3;
+  color: #0056b3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Added margin for spacing */
+}
+
+th, td {
+  border-bottom: 1px solid #ccc; /* Lightened border for subtlety */
+  text-align: center;
+  padding: 8px;
+}
+
+tfoot td {
+  border-bottom: none;
+  border-right: none;
 }
 
 .block-cell {
+  text-align: right;
   display: block; 
-  width: 150%;
 }
 
