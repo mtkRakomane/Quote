@@ -20,6 +20,14 @@ mongoose.connect('mongodb://localhost:27017/Quantity', {
   console.error('Database connection error:', err);
 });
 
+const priceSchema = new mongoose.Schema({
+  scPrice: Number,
+  pmPrice: Number,
+  icPrice: Number
+});
+
+const Price = mongoose.model('Price', priceSchema);
+
 // Define schemas and models
 const salesPersonSchema = new mongoose.Schema({ Name: String });
 const SalesPerson = mongoose.model('SalesPerson', salesPersonSchema);
@@ -457,19 +465,26 @@ app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 app.get('/printAllBilling', async (req, res) => {
   try {
     const users = await User.find();
-
     let billingData = [];
+
+    const scPrice = 1529.47;
+    const pmPrice = 1058.82;
+    const iprice = 3150.30;
+    const labour_cost = 320;
 
     users.forEach(user => {
       if (user.billing) {
         user.billing.forEach(bill => {
-          let sub_total = 0; 
-          let scPrice = 1529.47;
-          let pmPrice = 1058.82;
-          let iprice = 3150.30;
+          let sub_total = 0;
+
           bill.items.forEach(item => {
-            const total_price = item.stock_qty * item.unit_cost; 
-            sub_total += total_price + scPrice + pmPrice + iprice; 
+            const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
+            const total_equip_margin = item.unit_cost / (1 - equipMargin);
+            const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
+            const unit_labour_margin = (labour_cost * 0.4) / (1 - item.labour_margin);
+            const total_labour_margin = item.stock_qty * unit_labour_margin;
+            const total_price = item.stock_qty * total_equip_margin; 
+            sub_total += total_price; 
 
             billingData.push({
               bill_title: bill.bill_title,
@@ -479,16 +494,28 @@ app.get('/printAllBilling', async (req, res) => {
               cell: user.cell,
               customer_email: user.customer_email, 
               customer_name: user.customer_name,
+              labour_margin: item.labour_margin,
+              equip_margin: item.equip_margin,
+              product_type: item.product_type,
               descriptions: item.descriptions,
               stock_code: item.stock_code,
               stock_qty: item.stock_qty,
               unit_cost: item.unit_cost,
-              total_price: total_price, 
-              sub_total: sub_total,
+              total_price: total_price,
               scPrice: scPrice,
               pmPrice: pmPrice,
-              iprice:iprice
+              iprice: iprice,
+              unit_labour_margin: unit_labour_margin,
+              labour_cost: labour_cost,
+              labourMargin: labourMargin,
+              total_labour_margin: total_labour_margin,
+              total_equip_margin: total_equip_margin,
             });
+          });
+
+          // Add the sub_total to the billing data
+          billingData.forEach(data => {
+            data.sub_total = sub_total + (scPrice + pmPrice + iprice);
           });
         });
       }
@@ -502,6 +529,24 @@ app.get('/printAllBilling', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Server error');
+  }
+});
+
+
+
+app.post('/addPrices', async (req, res) => {
+  try {
+    const prices = new Price({
+      scPrice: 1529.47,
+      pmPrice: 1058.82,
+      icPrice: 3150.30
+    });
+    
+    await prices.save();
+    res.send('Prices saved successfully');
+  } catch (error) {
+    console.error('Error saving prices:', error);
+    res.status(500).send('Error saving prices');
   }
 });
 
