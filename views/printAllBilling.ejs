@@ -51,8 +51,9 @@
     %>
 
     <% Object.keys(groupedData).forEach(function(billTitle) { %>
-        <p>Billing Title: <%= billTitle %></p>
+       
         <table>
+             <strong>  <p>Billing Title: <%= billTitle %></p> </strong> 
             <thead>
                 <tr>
                   
@@ -69,55 +70,63 @@
                 <% groupedData[billTitle].forEach(function(data) { %>
                     <tr>
                       
-                        <td style="border-style: solid;"><%= data.stock_code %></td>
+                        <td ><%= data.stock_code %></td>
                         <td><%= data.product_type %></td>
                         <td><%= data.descriptions %></td>
                         <td><%= data.stock_qty %></td>
-                        <td>R     <%= data.total_equip_margin.toFixed(2) %></td>
-                        <td>R     <%= data.total_price.toFixed(2) %></td> 
+                        <td>R <%= data.total_equip_margin.toFixed(2) %></td>
+                        <td>R <%= data.total_price.toFixed(2) %></td> 
                        
                     </tr>
                     <% sub_total += data.total_price + data.scPrice + data.pmPrice + data.iprice; %> 
                     <% total_labour_margin = data.stock_qty * data.unit_labour_margin; %> 
                 <% }) %>
             </tbody>
-             
-                <tr>
-                    <td class="block-cell">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong>Sundries and Consumables:</strong>
-                            <span>R1 529.47</span>
-                        </div>
-                    </td>
-                    <td class="block-cell">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong>Project Management:</strong>
-                            <span>R1 058.82</span>
-                        </div>
-                    </td>
-                    <td class="block-cell">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong>Installation, Commissioning and Engineering:</strong>
-                            <span>R3 150.30</span>
-                        </div>
-                    </td>
-                    <td class="block-cell">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong>Labour:</strong>
-                            <span>R <%= total_labour_margin.toFixed(2) %></span> 
-                        </div>
-                    </td>
-                </tr>
+        <tbody>
+            <tr>
+                <td><strong>Sundries and Consumables:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R 1 529.47</strong></td>
+            </tr>
+            <tr>
+                <td ><strong>Project Management:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R 1 058.82</strong></td>
+            </tr>
+         <tr>
+           <td> <strong>Installation, Commissioning and Engineering:</strong></td> 
+           <td></td>
+           <td></td>
+           <td></td>
+           <td></td>
+           <td><strong>R 3 150.30</strong></td>
+         </tr>
+         <tr>
+            <td>  <strong>Labour:</strong> </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><strong>R <%= total_labour_margin.toFixed(2) %></strong></td>
+         </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
                 
-                <tr>
-                    <td colspan="5" class="block-cell" style="text-align: right;">
-                        <strong>Subtotal:</strong> R<%= sub_total.toFixed(2) %>
-                    </td>
-                </tr>
-          
-        </table> 
-      <% }) %>  
-      <hr>    
+                <td><strong>Subtotal:</strong></td>
+                <td><strong>R <%= sub_total.toFixed(2) %></strong></td>
+            </tr>
+       
+        </tbody>       
+         </table> 
+      <% }) %>      
       <p>Terms and Conditions</p>
       <div class="terms">
         <div class="term">1. Delivery to be confirmed on placement of order.</div>
