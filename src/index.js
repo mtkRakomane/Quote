@@ -79,7 +79,6 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// Route to render login form
 app.get('/', async (req, res) => {
   try {
     const salesPersons = await SalesPerson.find();
@@ -90,7 +89,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Route to render signup form
 app.get('/signup', async (req, res) => {
   try {
     const salesPersons = await SalesPerson.find();
@@ -109,7 +107,6 @@ app.get('/signup', async (req, res) => {
   }
 });
 
-// Route to handle signup form submission
 app.post('/signup', async (req, res) => {
   const billingData = {
     bill_title: req.body.bill_title,
@@ -181,12 +178,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// GET Route: Display update billing form
 app.get('/updateBilling/:userId/:billingIndex', async (req, res) => {
   try {
     const { userId, billingIndex } = req.params;
 
-    // Validate UserId and billingIndex
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).send('Invalid user ID');
     }
@@ -194,19 +189,16 @@ app.get('/updateBilling/:userId/:billingIndex', async (req, res) => {
       return res.status(400).send('Invalid billing index');
     }
 
-    // Find the user by userId
     const user = await User.findById(userId).exec();
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    // Check if billing entry exists at billingIndex
     const billing = user.billing[billingIndex];
     if (!billing) {
       return res.status(404).send('Billing entry not found');
     }
 
-    // Render update form with the current billing details
     res.render('updateBilling', { user, billing, billingIndex });
   } catch (error) {
     console.error('Error loading update page:', error);
@@ -227,7 +219,6 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
       return res.status(400).send('Missing or invalid items array');
     }
 
-    // Validate each item in the items array
     for (const [index, item] of items.entries()) {
       const {
         descriptions,
@@ -247,13 +238,12 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
       } = item;
 
       if (!install_difficulty || !sla_mla || !maintain_visit || !validate_num_days ||
-          !stock_code || isNaN(stock_qty) || !unit_cost || !product_type ||
+          !stock_code || stock_qty || !unit_cost || !product_type ||
           !equip_margin || !labour_margin || !labour_hrs || !maintenance_hrs || !supplier || !descriptions) {
         return res.status(400).send(`Missing required fields in item at index ${index}`);
       }
     }
 
-    // Validate userId and billingIndex
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).send('Invalid user ID');
     }
@@ -261,13 +251,11 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
       return res.status(400).send('Invalid billing index');
     }
 
-    // Fetch the user from database
     const user = await User.findById(userId).exec();
     if (!user) {
       return res.status(404).send('User not found');
     }
 
-    // Fetch the billing entry to be updated
     const billing = user.billing[billingIndex];
     if (!billing) {
       return res.status(404).send('Billing entry not found');
@@ -275,7 +263,6 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
 
     billing.bill_title = bill_title;
 
-    // Update the items array
     billing.items = items.map((item) => ({
       descriptions: item.descriptions,
       install_difficulty: item.install_difficulty,
@@ -283,7 +270,7 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
       maintain_visit: item.maintain_visit,
       validate_num_days: item.validate_num_days,
       stock_code: item.stock_code,
-      stock_qty: Number(item.stock_qty),
+      stock_qty: item.stock_qty,
       unit_cost: item.unit_cost,
       product_type: item.product_type,
       equip_margin: item.equip_margin,
