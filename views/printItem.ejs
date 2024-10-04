@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Item</title>
+    <link rel="stylesheet" href="/style.css">
+ 
+</head>
+<body>
+    <div class="form-container">
+        <h1>Item Details</h1>
+        <table>
+            <h2>Billing Title: <%= billTitle %></h2> 
+            <tbody>
+                <tr>
+                    <th>Description</th>
+                    <td><%= item.descriptions %></td>
+                </tr>
+                
+                <tr>
+                    <th>Stock Code</th>
+                    <td><%= item.stock_code %></td>
+                </tr>
+                <tr>
+                    <th>Stock Qty</th>
+                    <td><%= item.stock_qty %></td>
+                </tr>
+                <tr>
+                    <th>Unit Cost</th>
+                    <td><%= item.unit_cost %></td>
+                </tr>
+                <tr>
+                    <th>Product Type</th>
+                    <td><%= item.product_type %></td>
+                </tr>
+                <tr>
+                    <th>Total Price</th>
+                    <td><%= total_price.toFixed(2) %> </td>
+                </tr>
+                <tr>
+                    <th>Labour Cost</th>
+                    <td><%= labour_cost.toFixed(2) %></td>
+                </tr>
+            </tbody>
+        </table>
+        <button onclick="window.print()">Print Item</button>
+    </div>
+</body>
+</html>
