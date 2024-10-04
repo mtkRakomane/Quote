@@ -519,24 +519,62 @@ app.get('/printAllBilling', async (req, res) => {
   }
 });
 
-
-
-app.post('/addPrices', async (req, res) => {
+app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
-    const prices = new Price({
-      scPrice: 1529.47,
-      pmPrice: 1058.82,
-      icPrice: 3150.30
+    const { userId, billingIndex, itemIndex } = req.params;
+
+    const user = await User.findById(userId).exec();
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    if (billingIndex >= user.billing.length) {
+      return res.status(404).send('Billing index out of range');
+    }
+
+    const billingEntry = user.billing[billingIndex];
+
+    if (itemIndex >= billingEntry.items.length) {
+      return res.status(404).send('Item index out of range');
+    }
+
+    const item = billingEntry.items[itemIndex];
+    const scPrice = 1529.47;
+    const pmPrice = 1058.82;
+    const iprice = 3150.30;
+    const labour_cost = 320;
+
+    const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
+    const total_equip_margin = item.unit_cost / (1 - equipMargin);
+    const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
+    const unit_labour_margin = (labour_cost * 0.4) / (1 - item.labour_margin);
+    const total_labour_margin = item.stock_qty * unit_labour_margin;
+    const total_price = item.stock_qty * total_equip_margin;
+    const sub_total = total_price + total_labour_margin + scPrice + pmPrice + iprice;
+
+    res.render('printItem', {
+      user,
+      billingEntry,
+      item,
+      billTitle: billingEntry.bill_title,
+      equipMargin,
+      labourMargin,
+      unit_labour_margin,
+      total_equip_margin,
+      total_labour_margin,
+      total_price,
+      sub_total,
+      scPrice,
+      pmPrice,
+      iprice,
+      labour_cost,
     });
-    
-    await prices.save();
-    res.send('Prices saved successfully');
   } catch (error) {
-    console.error('Error saving prices:', error);
-    res.status(500).send('Error saving prices');
+    console.error('Error printing item:', error);
+    res.status(500).send('Error printing item');
   }
 });
-
 
 // Start server
 const port = 1520;
