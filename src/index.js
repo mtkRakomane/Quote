@@ -428,7 +428,6 @@ app.post('/deleteBilling/:userId/:billingIndex', async (req, res) => {
   }
 });
 
-
 app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
       const { userId, billingIndex, itemIndex } = req.params;
@@ -452,8 +451,7 @@ app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 app.get('/printAllBilling', async (req, res) => {
   try {
     const users = await User.find();
-    let billingData = [];
-
+    const billingData = [];
     const scPrice = 1529.47;
     const pmPrice = 1058.82;
     const iprice = 3150.30;
@@ -462,16 +460,21 @@ app.get('/printAllBilling', async (req, res) => {
     users.forEach(user => {
       if (user.billing) {
         user.billing.forEach(bill => {
-          let sub_total = 0;
+          let billSubtotal = 0; 
+          let totalLabourMargin = 0;
 
           bill.items.forEach(item => {
             const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
-            const total_equip_margin = item.unit_cost / (1 - equipMargin);
+            const totalEquipMargin = item.unit_cost / (1 - equipMargin);
+
             const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
-            const unit_labour_margin = (labour_cost * 0.4) / (1 - item.labour_margin);
-            const total_labour_margin = item.stock_qty * unit_labour_margin;
-            const total_price = item.stock_qty * total_equip_margin; 
-            sub_total += total_price; 
+            const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
+            const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
+
+            totalLabourMargin += totalLabourItemMargin;
+
+            const itemTotalPrice = item.stock_qty * totalEquipMargin;
+            billSubtotal += itemTotalPrice;
 
             billingData.push({
               bill_title: bill.bill_title,
@@ -479,7 +482,7 @@ app.get('/printAllBilling', async (req, res) => {
               customer_email: user.email,
               name: user.name,
               cell: user.cell,
-              customer_email: user.customer_email, 
+              customer_email: user.customer_email,
               customer_name: user.customer_name,
               labour_margin: item.labour_margin,
               equip_margin: item.equip_margin,
@@ -487,22 +490,20 @@ app.get('/printAllBilling', async (req, res) => {
               descriptions: item.descriptions,
               stock_code: item.stock_code,
               stock_qty: item.stock_qty,
-              unit_cost: item.unit_cost,
-              total_price: total_price,
-              scPrice: scPrice,
-              pmPrice: pmPrice,
-              iprice: iprice,
-              unit_labour_margin: unit_labour_margin,
-              labour_cost: labour_cost,
-              labourMargin: labourMargin,
-              total_labour_margin: total_labour_margin,
-              total_equip_margin: total_equip_margin,
+              unit_cost: Number(item.unit_cost) || 0,
+              total_price: itemTotalPrice,
+              total_labour_margin: totalLabourItemMargin,
+              total_equip_margin: totalEquipMargin,
             });
           });
 
-          // Add the sub_total to the billing data
+          const itemSubtotal = billSubtotal + totalLabourMargin + scPrice + pmPrice + iprice;
+
           billingData.forEach(data => {
-            data.sub_total = sub_total + (scPrice + pmPrice + iprice);
+            if (data.bill_title === bill.bill_title) {
+              data.total_labour_margin = totalLabourMargin;
+              data.bill_subtotal = itemSubtotal;
+            }
           });
         });
       }
@@ -540,6 +541,7 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
     }
 
     const item = billingEntry.items[itemIndex];
+    
     const scPrice = 1529.47;
     const pmPrice = 1058.82;
     const iprice = 3150.30;
@@ -547,9 +549,11 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 
     const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
     const total_equip_margin = item.unit_cost / (1 - equipMargin);
+    
     const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
-    const unit_labour_margin = (labour_cost * 0.4) / (1 - item.labour_margin);
+    const unit_labour_margin = (labour_cost * 0.3) / (1 - labourMargin);
     const total_labour_margin = item.stock_qty * unit_labour_margin;
+    
     const total_price = item.stock_qty * total_equip_margin;
     const sub_total = total_price + total_labour_margin + scPrice + pmPrice + iprice;
 
