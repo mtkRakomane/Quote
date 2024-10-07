@@ -7,7 +7,8 @@
     <link rel ="stylesheet" href="/style.css">
 </head>
 <body>
-<div class="container">  
+<div class="container"> 
+    <form action="/printAllBilling" method="post"> 
  <div class="card-right">
         <div class="card-body">
             <div class="image-text-container">
@@ -37,51 +38,48 @@
     We help customers meet standards and exceed compliance regulations from development through installation and ongoing maintenance.
     From consulting and design, through technology deployment and integration, our team provides turnkey solutions to effectively secure critical infrastructure, energy and chemical facilities, ports, airports, corporate offices, and more.
 </span>
-
 <hr>
-    <% 
+<% 
     // Group billing data by bill_title
-    const groupedData = billingData.reduce((acc, data) => {
-      if (!acc[data.bill_title]) {
-        acc[data.bill_title] = [];
-      }
-      acc[data.bill_title].push(data);
-      return acc;
+    const groupedData = billingData.reduce((acc, item) => {
+        acc[item.bill_title] = acc[item.bill_title] || [];
+        acc[item.bill_title].push(item);
+        return acc;
     }, {});
-    %>
+%>
 
-    <% Object.keys(groupedData).forEach(function(billTitle) { %>
-       
-        <table>
-             <strong>  <p>Billing Title: <%= billTitle %></p> </strong> 
-            <thead>
+<% Object.keys(groupedData).forEach(function(billTitle) { %>
+    <table>
+        <strong><p>Billing Title: <%= billTitle %></p></strong>
+        <thead>
+            <tr>
+                <th>Stock Code</th>
+                <th>Product Type</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% let billSubtotal = 0; %>
+            <% let totalLabourMargin = 0; %>
+
+            <% groupedData[billTitle].forEach(function(data) { %>
                 <tr>
-                  
-                    <th>Stock Code</th>
-                    <th>Product Type</th>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Unit Price</th>
-                    <th>Total Price</th> 
+                    <td><%= data.stock_code %></td>
+                    <td><%= data.product_type %></td>
+                    <td><%= data.descriptions %></td>
+                    <td><%= data.stock_qty %></td>
+                    <td>R <%= data.unit_cost.toFixed(2) %></td>
+                    <td>R <%= data.total_price.toFixed(2) %></td>
                 </tr>
-            </thead>
-            <tbody>
-                <% let sub_total = 0; %>
-                <% groupedData[billTitle].forEach(function(data) { %>
-                    <tr>
-                      
-                        <td ><%= data.stock_code %></td>
-                        <td><%= data.product_type %></td>
-                        <td><%= data.descriptions %></td>
-                        <td><%= data.stock_qty %></td>
-                        <td>R <%= data.total_equip_margin.toFixed(2) %></td>
-                        <td>R <%= data.total_price.toFixed(2) %></td> 
-                       
-                    </tr>
-                    <% sub_total += data.total_price + data.scPrice + data.pmPrice + data.iprice; %> 
-                    <% total_labour_margin = data.stock_qty * data.unit_labour_margin; %> 
-                <% }) %>
-            </tbody>
+                <% 
+                    billSubtotal += data.total_price;
+                    totalLabourMargin += data.total_labour_margin; 
+                %>
+            <% }) %>
+        </tbody>
         <tbody>
             <tr>
                 <td><strong>Sundries and Consumables:</strong></td>
@@ -92,41 +90,41 @@
                 <td><strong>R 1529.47</strong></td>
             </tr>
             <tr>
-                <td ><strong>Project Management:</strong></td>
+                <td><strong>Project Management:</strong></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td><strong>R 1058.82</strong></td>
             </tr>
-         <tr>
-           <td> <strong>Installation, Commissioning and Engineering:</strong></td> 
-           <td></td>
-           <td></td>
-           <td></td>
-           <td></td>
-           <td><strong>R 3150.30</strong></td>
-         </tr>
-         <tr>
-            <td>  <strong>Labour:</strong> </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><strong>R <%= total_labour_margin.toFixed(2) %></strong></td>
-         </tr>
             <tr>
+                <td><strong>Installation, Commissioning and Engineering:</strong></td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><strong>Subtotal:</strong></td>
-                <td><strong>R <%= sub_total.toFixed(2) %></strong></td>
+                <td><strong>R 3150.30</strong></td>
             </tr>
-       
-        </tbody>       
-         </table> 
-      <% }) %>      
+            <tr>
+                <td><strong>Labour:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R <%= totalLabourMargin.toFixed(2) %></strong></td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td><strong>Subtotal:</strong></td>
+                <td>
+                    <strong>R <%= (billSubtotal + 1529.47 + 1058.82 + 3150.30 + totalLabourMargin).toFixed(2) %></strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<% }) %>
+
+ 
       <p>Terms and Conditions</p>
       <div class="terms">
         <div class="term">1. Delivery to be confirmed on placement of order.</div>
@@ -172,7 +170,7 @@
         <p><%= salesPersonCell %></p>
         <p>Office: +27 (0) 12 665 8000</p>
     </div>
-
+</form>
     <button onclick="window.print()">Print this page</button>
 </div>
 </body>
