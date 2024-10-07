@@ -9,7 +9,37 @@
 </head>
 <body>
     <div class="form-container">
-        <h1>Item Details</h1>
+       
+        <div class="card-right">
+            <div class="card-body">
+                <div class="image-text-container">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s" class="img-fluid mb-3" alt="Placeholder image" width="700px" height="200px">
+                    <div class="text-container">
+                        <p> 222 Witch-Hazel Avenue Highveld Techno Park</p>
+                        <p>Centurion 0157</p>
+                        <p> Tel +27 12665 8000</p>
+                        <p>PO Box 68726 Highveld 0169</p>
+                        <p>South Africa</p>
+                        <p>www.proteacoin.co.za</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+<p style="font-size: 13px;"><strong>To:</strong> </p>
+<p style="font-size: 13px;"><strong>Att:</strong></p>
+<p style="font-size: 13px;"><strong>Email:</strong> </p>
+<p style="font-size: 13px;"><strong>Date:</strong> <%= new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+<p style="font-size: 13px;"><strong>Ref:</strong> </p>
+<hr>
+<p style="font-size: 12px;">Dear: </p>
+<p style="font-size: 12px;">Thank you for affording Bidvest Protea Coin the opportunity to quote for your technology security requirements. We look forward to delivering and supplying the proposed solution.</p>     
+<span style="font-size: 12px;">
+    Bidvest Protea Coin designs, builds, and maintains stand-alone and integrated security systems. Our knowledge of a wide range of technologies, products, and systems provides cost-effective, reliable, and scalable solutions.
+    We help customers meet standards and exceed compliance regulations from development through installation and ongoing maintenance.
+    From consulting and design, through technology deployment and integration, our team provides turnkey solutions to effectively secure critical infrastructure, energy and chemical facilities, ports, airports, corporate offices, and more.
+</span>
+<hr>
         <table>
             <h2>Billing Title: <%= billTitle %></h2> 
             <tbody>
@@ -17,7 +47,6 @@
                     <th>Description</th>
                     <td><%= item.descriptions %></td>
                 </tr>
-                
                 <tr>
                     <th>Stock Code</th>
                     <td><%= item.stock_code %></td>
@@ -28,7 +57,7 @@
                 </tr>
                 <tr>
                     <th>Unit Cost</th>
-                    <td><%= item.unit_cost %></td>
+                    <td>R <%= total_equip_margin.toFixed(2) %></td>
                 </tr>
                 <tr>
                     <th>Product Type</th>
@@ -40,10 +69,71 @@
                 </tr>
                 <tr>
                     <th>Labour Cost</th>
-                    <td><%= labour_cost.toFixed(2) %></td>
+                    <td>R<%=  total_labour_margin.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <th>Sundries and Consumables:</th>
+                    <td><strong>R 1529.47</strong></td>
+                </tr>
+                <tr>
+                    <th>Project Management:</th>
+                    <td><strong>R 1058.82</strong></td>
+                </tr>
+                <tr>
+                    <th> Installation, Commissioning and Engineering:</th> 
+                    <td><strong>R 3150.30</strong></td>
+                </tr>
+                <tr>
+                    <th>Sub Total</th>
+                    <td>R<%= sub_total.toFixed(2) %></td>
                 </tr>
             </tbody>
         </table>
+        <p>Terms and Conditions</p>
+        <div class="terms">
+          <div class="term">1. Delivery to be confirmed on placement of order.</div>
+          <div class="term">2. Standard delivery is 2 to 6 weeks, subject to solution design components.</div>
+          <div class="term">Exclusions and Assumptions: </div> 
+          <div class="term">SACO</div> 
+          <div class="term">3. Data transfer, Payroll interface, Shift sensing, Job costing, Mining modules and additional reports unless specifically quoted above.  </div> 
+          <div class="term">4. customisation after Business Process Analysis not included. </div> 
+          <div class="term">5. Assistance with system configuration and setup can be provided at the prevailing hourly rate if not quoted for separately.</div> 
+          <div class="term">6. Network and server architecture to be provided by client, unless quoted for separately.</div> 
+          <div class="term">7.  Static IP addresses required for biometric and controller devices.</div> 
+          <div class="term">Technical Security Solutions  </div> 
+          <div class="term">8. All cable installation more than 3 meter above ground level will be charged at double the stated rate  </div> 
+          <div class="term">9.  The price quoted for installation assumes that all required cable routes are freely accessible without blockages</div> 
+          <div class="term">10.   Customer induction training courses, medicals and security certification costs  are excluded unless specified  </div> 
+          <div class="term">General</div> 
+          <div class="term">11.   Prices quoted are exclusive of any civil work pertaining to the installation.</div> 
+          <div class="term">12. 220V AC power supply to be provided by the client within 3 metres of each installation point where required, unless specifically quoted for.</div> 
+          <div class="term">13.  No work will commence without an official company order & a signed copy of this quotation and Terms and Conditions</div> 
+          <div class="term">14.  All equipment remains the property of BPC until the account is settled in full. </div> 
+          <div class="term">15.  The pricing provided in the quotation is subject to the Rate of Exchange on the day of quote and subject to supplier pricing not fluctuating more than 3%.  </div> 
+          <div class="term">16. Payment terms are 30 days from date of invoice.</div> 
+          <div class="term">17.  It is hereby recorded that the sole function of the service contemplated herein and/or personnel provided for by Bidvest Protea Coin is to endeavour to minimise the risk of 
+              loss or damage (to person, property or otherwise). Bidvest Protea Coin therefore does not warrant or guarantee that it or its personnel will be able to minimise or prevent any such 
+              loss or damage. Bidvest Protea Coin shall not be liable to you or any third party for any loss or damage (to person or property) of whatsoever kind or nature, whether direct, 
+              indirect, special or consequential, arising out of any act, omission, or failure to act on the part of Bidvest Protea Coin or against any claim which may be made against Bidvest 
+              Protea Coin in respect of such loss or damage, and you by your signature hereto agree to indemnify and hold Bidvest Protea Coin harmless against any such loss or damage 
+              (including legal costs and/or expense) incurred by Bidvest Protea Coin. </div> 
+          <div class="term">18.   At acceptance of service by either your signature hereto or actual inception thereof (whichever is the earlier) whilst legal terms and conditions of an agreement between the 
+              Parties are being finalized, it is agreed that these terms and conditions will govern the relationship between the Parties unless and until an agreement to the contrary has been 
+              concluded. </div> 
+          <div class="term">19.  You acknowledge having read and understood the foregoing terms and conditions and having no objection in writing thereto by your signature  being duly authorized hereto 
+              irrevocably accept the foregoing to be legal binding and enforceable provisions.   </div> 
+          <div class="term">20.  Proposal valid only for the period stipulated on this document</div> 
+          <div class="term">21.   ISP Connectivity to be supplied by the client, for the cost of the client</div>
+      </div>
+      <hr>
+      <div class="signature">
+          <p>Yours Faithfully</p>
+          <p> saleName</p>
+          <p>Bidvest Protea Coin</p>
+          <p>Head Office, 16 Eddington Crescent, Highveld, Technopark, Centurion, 0157</p>
+          <p> salesPersonCell </p>
+          <p>Office: +27 (0) 12 665 8000</p>
+      </div>
         <button onclick="window.print()">Print Item</button>
     </div>
 </body>
