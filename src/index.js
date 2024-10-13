@@ -29,8 +29,8 @@ const priceSchema = new mongoose.Schema({
 const Price = mongoose.model('Price', priceSchema);
 
 // Define schemas and models
-const salesPersonSchema = new mongoose.Schema({ Name: String });
-const SalesPerson = mongoose.model('SalesPerson', salesPersonSchema);
+const salePeopleSchema = new mongoose.Schema({saleName: String});
+const SalePeopleType = mongoose.model('salePeople', salePeopleSchema);
 
 const validateNumTypeSchema = new mongoose.Schema({ validate_num_days: String });
 const ValidateNumType = mongoose.model('ValidateNumType', validateNumTypeSchema);
@@ -49,7 +49,7 @@ const SupplyType = mongoose.model('SupplyType', supplyTypeSchema);
 
 const userSchema = new mongoose.Schema({
   ref_num: String,
-  name: String,
+  saleName: String,
   email: String,
   cell: String,
   role: String,
@@ -81,8 +81,9 @@ const User = mongoose.model('User', userSchema);
 
 app.get('/', async (req, res) => {
   try {
-    const salesPersons = await SalesPerson.find();
-    res.render('login', { salesPersons });
+    // Fetch the sale people using the correct model name
+    const salePeoples = await SalePeopleType.find();
+    res.render('login', { salePeoples }); // Pass the fetched data to the view
   } catch (err) {
     console.error('Error fetching data for login:', err);
     res.status(500).send('Error fetching data for login');
@@ -91,7 +92,8 @@ app.get('/', async (req, res) => {
 
 app.get('/signup', async (req, res) => {
   try {
-    const salesPersons = await SalesPerson.find();
+   
+    const salePeoples = await SalePeopleType.find();
     const validateNumTypes = await ValidateNumType.find();
     const slaMlaTypes = await SlaMlaType.find();
     const installDifficultyTypes = await InstallDifficultyType.find();
@@ -99,7 +101,7 @@ app.get('/signup', async (req, res) => {
     const supplyTypes = await SupplyType.find();
 
     res.render('signup', {
-      salesPersons, validateNumTypes, slaMlaTypes, installDifficultyTypes, productTypes, supplyTypes,
+      validateNumTypes, slaMlaTypes, installDifficultyTypes, productTypes, supplyTypes,salePeoples,
     });
   } catch (err) {
     console.error('Error fetching data for signup:', err);
@@ -139,8 +141,8 @@ app.post('/signup', async (req, res) => {
     } else {
       const userData = {
         ref_num: req.body.ref_num,
+        saleName: req.body.saleName,
         descriptions: req.body.descriptions,
-        name: req.body.name,
         email: req.body.email,
         cell: req.body.cell,
         role: req.body.role,
@@ -161,9 +163,9 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    const { ref_num, name } = req.body;
+    const { ref_num, saleName } = req.body;
     
-    const user = await User.findOne({ ref_num, name });
+    const user = await User.findOne({ ref_num, saleName });
     
     if (!user) {
       res.send('User not found');
@@ -289,7 +291,6 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
   }
 });
 
-
 app.get('/', async (req, res) => {
   try {
    
@@ -306,7 +307,7 @@ app.get('/', async (req, res) => {
 app.get('/addQuote', async (req, res) => {
     try {
     
-        const salesPersons = await SalesPerson.find();
+      const salePeoples = await SalePeopleType.find();
         const validateNumTypes = await ValidateNumType.find();
         const slaMlaTypes = await SlaMlaType.find();
         const installDifficultyTypes = await InstallDifficultyType.find();
@@ -314,7 +315,7 @@ app.get('/addQuote', async (req, res) => {
         const supplyTypes = await SupplyType.find();
         
         res.render('addQuote', { 
-            salesPersons, validateNumTypes, slaMlaTypes, 
+            salePeoples, validateNumTypes, slaMlaTypes, 
             installDifficultyTypes, productTypes, supplyTypes 
         });
     } catch (error) {
@@ -428,6 +429,7 @@ app.post('/deleteBilling/:userId/:billingIndex', async (req, res) => {
   }
 });
 
+
 app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
       const { userId, billingIndex, itemIndex } = req.params;
@@ -480,7 +482,7 @@ app.get('/printAllBilling', async (req, res) => {
               bill_title: bill.bill_title,
               ref_num: user.ref_num,
               customer_email: user.email,
-              name: user.name,
+              saleName: user.saleName,
               cell: user.cell,
               customer_email: user.customer_email,
               customer_name: user.customer_name,
@@ -509,7 +511,7 @@ app.get('/printAllBilling', async (req, res) => {
       }
     });
 
-    const salesPersonName = billingData.length > 0 ? billingData[0].name : '';
+    const salesPersonName = billingData.length > 0 ? billingData[0].saleName : '';
     const salesPersonCell = billingData.length > 0 ? billingData[0].cell : '';
     const customerEmail = billingData.length > 0 ? billingData[0].customer_email : '';
 
@@ -519,6 +521,7 @@ app.get('/printAllBilling', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
 
 app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
@@ -577,6 +580,16 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   } catch (error) {
     console.error('Error printing item:', error);
     res.status(500).send('Error printing item');
+  }
+});
+
+app.get('/overview', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.render('overview', { users });
+  } catch (error) {
+    console.error('Error fetching data for overview:', error);
+    res.status(500).send('Error fetching data for overview');
   }
 });
 
