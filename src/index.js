@@ -48,25 +48,12 @@ const supplyTypeSchema = new mongoose.Schema({ supplier: String });
 const SupplyType = mongoose.model('SupplyType', supplyTypeSchema);
 
 const userSchema = new mongoose.Schema({
-  ref_num: String,
-  saleName: String,
-  email: String,
-  cell: String,
-  role: String,
-  customer_name: String,
-  customer_call_person: String,
-  customer_email: String,
+  ref_num: String, saleName: String, email: String, cell: String, role: String, customer_name: String, customer_call_person: String,customer_email: String,
   billing: [{
     bill_title: String,
    
     items:[ {
-      descriptions: String,
-      install_difficulty: String,
-      sla_mla: String,
-      maintain_visit: String,
-      validate_num_days: String,
-      stock_code: String,
-      stock_qty: String,
+      descriptions: String, install_difficulty: String, sla_mla: String, maintain_visit: String, validate_num_days: String, stock_code: String, stock_qty: String, 
       unit_cost: String,
       product_type: String,
       equip_margin: String,
@@ -81,9 +68,8 @@ const User = mongoose.model('User', userSchema);
 
 app.get('/', async (req, res) => {
   try {
-    // Fetch the sale people using the correct model name
     const salePeoples = await SalePeopleType.find();
-    res.render('login', { salePeoples }); // Pass the fetched data to the view
+    res.render('login', { salePeoples }); 
   } catch (err) {
     console.error('Error fetching data for login:', err);
     res.status(500).send('Error fetching data for login');
@@ -114,10 +100,7 @@ app.post('/signup', async (req, res) => {
     bill_title: req.body.bill_title,
     
     items: {
-      descriptions: req.body.descriptions,
-      install_difficulty: req.body.install_difficulty,
-    sla_mla: req.body.sla_mla,
-    maintain_visit: req.body.maintain_visit,
+      descriptions: req.body.descriptions, install_difficulty: req.body.install_difficulty, sla_mla: req.body.sla_mla,maintain_visit: req.body.maintain_visit,
     validate_num_days: req.body.validate_num_days,
       stock_code: req.body.stock_code,
       stock_qty: req.body.stock_qty,
@@ -303,7 +286,6 @@ app.get('/', async (req, res) => {
   }
 });
 
-
 app.get('/addQuote', async (req, res) => {
     try {
     
@@ -407,7 +389,6 @@ app.post('/addItem', async (req, res) => {
       res.status(500).send("Server Error");
   }
 });
-
 
 app.post('/deleteBilling/:userId/:billingIndex', async (req, res) => {
   try {
@@ -522,7 +503,6 @@ app.get('/printAllBilling', async (req, res) => {
   }
 });
 
-
 app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
     const { userId, billingIndex, itemIndex } = req.params;
@@ -586,12 +566,34 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 app.get('/overview', async (req, res) => {
   try {
     const users = await User.find();
-    res.render('overview', { users });
+    const totalLabourHrs = users.reduce((total, user) => {
+      return total + (user.labour_hrs || 0); 
+    }, 0);
+    
+    const totalPrices = [];
+    const unitCosts = [];
+
+    users.forEach(user => {
+      if (user.billing) {
+        user.billing.forEach(bill => {
+          bill.items.forEach(item => {
+            totalPrices.push(item.total_price); 
+            unitCosts.push(item.unit_cost); 
+          });
+        });
+      }
+    });
+
+    const grandTotalPrice = totalPrices.reduce((sum, price) => sum + price, 0);
+    const averageUnitCost = unitCosts.length > 0 ? (unitCosts.reduce((sum, cost) => sum + cost, 0) / unitCosts.length) : 0;
+
+    res.render('overview', { users, totalLabourHrs, grandTotalPrice, averageUnitCost });
   } catch (error) {
     console.error('Error fetching data for overview:', error);
     res.status(500).send('Error fetching data for overview');
   }
 });
+
 
 // Start server
 const port = 1520;
