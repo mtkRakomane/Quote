@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+        <script src="/js/updateFactor.js" defer></script>
 
 </head>
 
@@ -60,23 +61,23 @@
                            <tbody>
                             <tr>
                                 <td>Total Selling Price</td>
-                                <td>R</td>
+                                <td>R <%= total_sell_project.toFixed(2) %></td>
                             </tr>
                             <tr>
                                 <td>Total Selling Price inc. VAT</td>
-                                <td>R</td>
+                                <td>R <%= total_sell_with_vat.toFixed(2) %></td>
                             </tr>
                             <tr>
                                 <td>Total Cost</td>
-                                <td>R</td>
+                                <td>R  <%= total_cost_project.toFixed(2) %></td>
                             </tr>
                             <tr>
                                 <td>Total Gross Profit</td>
-                                <td>R</td>
+                                <td>R <%= total_gross_profit.toFixed(2) %></td>
                             </tr>
                             <tr>
                                 <td>Actual Gross Margin %</td>
-                                <td>%</td>
+                                <td>%Depends on Difficulty Factor!!</td>
                             </tr>
                            </tbody>
                         </table>
@@ -89,20 +90,42 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>Installation Difficulty Factor</td>
-                                    <td >Install</td>
+                                    <td>Installation Difficulty</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="install_difficulty" name="install_difficulty" required onchange="updateFactor()">
+                                                <option value="" disabled selected>Select an Installation Difficulty</option>
+                                                <% installDifficultyTypes.forEach(type => { %>
+                                                  <option value="<%= type.install_difficulty %>" data-factor="<%= type.factor %>">
+                                                    <%= type.install_difficulty %>
+                                                  </option>
+                                                <% }); %>
+                                              </select>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>Installation Difficulty Factor </td>
-                                    <td >Masilo</td>
+                                    <td>Associated Factor</td>
+                                    <td>
+                                        <!-- This will display the associated factor -->
+                                        <input type="text" id="factor" name="factor" readonly>
+                                    </td>
                                 </tr>
+                                                              
                                 <tr>
                                     <td>SLA & MSS Period in Months</td>
-                                    <td >num</td>
+                                    <td> <div class="form-group">
+                                        <select id="sla_mla" name="sla_mla" required>
+                                            <option value="" disabled selected>Select a SLA & MSS</option>
+                                            <% slaMlaTypes.forEach(type => { %>
+                                                <option value="<%= type.sla_mla %>"><%= type.sla_mla %></option>
+                                            <% }); %>
+                                        </select>
+                                    </div></td>
                                 </tr>
                                 <tr>
                                     <td>Number of Preventative Maint. Visits per annum</td>
-                                    <td> Days</td>
+                                    <td> <input> </input> </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -131,31 +154,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% if (user.billing) { %>
-                        <% user.billing.forEach(bill => { %>
-                            <% bill.items.forEach(item => { %>
+                   
                     <tr>
                         <td>Equipment Cost</td>
-                        <td>R</td>
+                        <td>R  <%= totalEquipCost.toFixed(2) %> </td>
                         <td></td>
-                        <td>R <%= item.total_price ? item.total_price.toFixed(2) : '0.00' %></td>
+                        <td>R <%= totalEquipSell.toFixed(2) %></td>
                         <td></td>
-                        <td>%</td>
+                        <td><%= gmEquip.toFixed(2) %>%</td>
                         <td></td>
-                        <td>%</td>
+                        <td><%= projectPercentEquip.toFixed(2) %>%</td>
                     </tr>
-                    <% }); %>
-                    <% }); %>
-                <% } %>
+                   
                     <tr>
                         <td>Equipment Installation Cost</td>
-                        <td>R</td>
+                        <td>R <%= total_labour_cost.toFixed(2) %></td>
                         <td></td>
-                        <td>R</td>
+                        <td>R <%=  total_labour_sell.toFixed(2) %></td>
                         <td></td>
-                        <td>%</td>
+                        <td> <%= gmLabour.toFixed(2) %>%</td>
                         <td></td>
-                        <td>%</td>
+                        <td><%= projectPercentLabour.toFixed(2) %>%</td>
                         </tr>
                     <tr>
                         <td>P & G's</td>
@@ -163,39 +182,39 @@
                         <td></td>
                         <td>R</td>
                         <td></td>
-                        <td>%</td>
+                        </td><%= gmSundries.toFixed(2) %>%</td>
                         <td></td>
                         <td>%</td>
                         </tr>
                         <tr>
                             <td>Sundries and Consumables</td>
-                            <td>R</td>
+                            <td>R  <%= total_cost_sundries.toFixed(2) %></td>
                             <td></td>
-                            <td>R</td>
+                            <td>R  <%= total_sell_sundries.toFixed(2) %></td>
                             <td></td>
-                            <td>%</td>
+                            <td><%= gmProjectManagement.toFixed(2) %>%</td>
                             <td></td>
-                            <td>%</td>
+                            <td><%= projectPercentSundries.toFixed(2) %>%</td>
                             </tr>
                             <tr>
                         <td>Project Management</td>
-                        <td>R</td>
+                        <td>R  <%= total_cost_project_management.toFixed(2) %></td>
                         <td></td>
-                        <td>R</td>
+                        <td>R <%= total_sell_project_management.toFixed(2) %></td>
                         <td></td>
-                        <td>%</td>
+                        <td> <%= gmProject.toFixed(2) %>%</td>
                         <td></td>
-                        <td>%</td>
+                        <td><%= projectPercentProjectManagement.toFixed(2) %>%</td>
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td>R</td>
+                                    <td>R  <%= total_cost_project.toFixed(2) %></td>
                                     <td></td>
-                                    <td>R</td>
+                                    <td>R <%= total_sell_project.toFixed(2) %></td>
                                     <td></td>
                                     <td>including Discounts of</td>
                                     <td></td>
-                                    <td>R</td>
+                                    <td>R </td>
                                 </tr>
                 </tbody>
             </table>
@@ -210,20 +229,28 @@
     <tbody>
         <tr>
             <td>Project Management Hours</td>
-            <td >Install</td>
+            <td > ... </td>
+
            <td> Project Days...</td>
-           <td>15.6...</td>
+           <td><%= projectDays.toFixed(2) %></td> 
         </tr>
         <tr>
             <td>Installation Hours</td>
-            <td ><%= totalLabourHrs %></td>
+            <td><%= totalLabourHrs %></td>
           <td>Weeks...</td>
-          <td>3.1....</td>
+          <td><%= projectWeeks.toFixed(2) %></td>
         </tr>
         <tr>
             <td>Proposal Validity in days</td>
             <td>
-               .....Days 
+                <div class="form-group">
+                    <select id="validate_num_days" name="validate_num_days" required>
+                        <option value="" disabled selected>Select a Validity in days</option>
+                        <% validateNumTypes.forEach(type => { %>
+                            <option value="<%= type.validate_num_days %>"><%= type.validate_num_days %></option>
+                        <% }); %>
+                    </select>
+                </div>
             </td>
             <td>Rate of Exchange </td>
             <td>R   -</td>
