@@ -566,34 +566,116 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 app.get('/overview', async (req, res) => {
   try {
     const users = await User.find();
-    const totalLabourHrs = users.reduce((total, user) => {
-      return total + (user.labour_hrs || 0); 
-    }, 0);
+    const installDifficultyTypes = await InstallDifficultyType.find();
+    const slaMlaTypes = await SlaMlaType.find();
+    const validateNumTypes = await ValidateNumType.find();
     
-    const totalPrices = [];
-    const unitCosts = [];
+    let totalLabourHrs = 0;
+    let totalEquipSell = 0;
+    let totalEquipCost = 0;
+    let total_labour_cost = 0; 
+    let total_labour_sell = 0; 
+    let total_cost_sundries = 0;
+    let total_sell_sundries = 0; 
+    let total_cost_project_management = 0; 
+    let total_sell_project_management = 0; 
+    let billSubtotal = 0; 
+    let total_gross_profit = 0;
+
+    const scPrice = 1529.47; 
+    const pmPrice = 1058.82; 
+    const iprice = 3150.30; 
+    const labour_cost = 320; 
 
     users.forEach(user => {
       if (user.billing) {
         user.billing.forEach(bill => {
+          total_cost_sundries += scPrice; 
+          total_sell_sundries += scPrice; 
+          total_cost_project_management += pmPrice;
+          total_sell_project_management += pmPrice;
+
           bill.items.forEach(item => {
-            totalPrices.push(item.total_price); 
-            unitCosts.push(item.unit_cost); 
+            const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
+            const totalEquipMargin = item.unit_cost / (1 - equipMargin);
+            const totalPriceSell = item.stock_qty * totalEquipMargin;
+            totalEquipSell += totalPriceSell;
+            const totalPriceCost = item.stock_qty * item.unit_cost;
+            totalEquipCost += totalPriceCost;
+
+            const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
+            const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
+            const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
+            total_labour_cost += totalLabourItemMargin;
+            total_labour_sell += totalLabourItemMargin;
+
+            billSubtotal += totalPriceSell;
           });
         });
       }
     });
 
-    const grandTotalPrice = totalPrices.reduce((sum, price) => sum + price, 0);
-    const averageUnitCost = unitCosts.length > 0 ? (unitCosts.reduce((sum, cost) => sum + cost, 0) / unitCosts.length) : 0;
+    const projectDays = totalLabourHrs / 8;
+    const projectWeeks = projectDays / 5;
 
-    res.render('overview', { users, totalLabourHrs, grandTotalPrice, averageUnitCost });
+    const total_cost_project = totalEquipCost + total_labour_cost + total_cost_sundries + total_cost_project_management;
+    const total_sell_project = totalEquipSell + total_labour_sell + total_sell_sundries + total_sell_project_management;
+
+    total_gross_profit = total_sell_project - total_cost_project;
+    // Calculate VAT (14%)
+    const vatPercentage = 14 / 100;
+    const total_vat = total_sell_project * vatPercentage;
+    const total_sell_with_vat = total_sell_project + total_vat;
+
+    // Calculate GM (gross margin) for each category
+    const gmEquip = ((totalEquipSell - totalEquipCost) / totalEquipSell) * 100;
+    const gmLabour = ((total_labour_sell - total_labour_cost) / total_labour_sell) * 100;
+    const gmSundries = ((total_sell_sundries - total_cost_sundries) / total_sell_sundries) * 100;
+    const gmProjectManagement = ((total_sell_project_management - total_cost_project_management) / total_sell_project_management) * 100;
+    const gmProject = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
+
+    // Calculate project percentage for each category
+    const projectPercentEquip = (totalEquipSell / total_sell_project) * 100;
+    const projectPercentLabour = (total_labour_sell / total_sell_project) * 100;
+    const projectPercentSundries = (total_sell_sundries / total_sell_project) * 100;
+    const projectPercentProjectManagement = (total_sell_project_management / total_sell_project) * 100;
+
+    res.render('overview', {
+      users,
+      installDifficultyTypes,
+      slaMlaTypes,
+      validateNumTypes,
+      totalLabourHrs,   // Total labour hours
+      projectDays,      // Total project days
+      projectWeeks,
+      totalEquipSell,    
+      totalEquipCost,   
+      total_labour_cost, 
+      total_labour_sell, 
+      total_cost_sundries, 
+      total_sell_sundries, 
+      total_cost_project_management, 
+      total_sell_project_management, 
+      total_cost_project, 
+      total_sell_project, 
+      total_vat,          
+      total_sell_with_vat, 
+      gmEquip,            
+      gmLabour,           
+      gmSundries,         
+      gmProjectManagement, 
+      gmProject,           
+      projectPercentEquip,  
+      projectPercentLabour,
+      projectPercentSundries, 
+      projectPercentProjectManagement, 
+      total_gross_profit 
+    });
   } catch (error) {
     console.error('Error fetching data for overview:', error);
     res.status(500).send('Error fetching data for overview');
   }
 });
-
 
 // Start server
 const port = 1520;
