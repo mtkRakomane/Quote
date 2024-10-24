@@ -569,13 +569,14 @@ app.get('/overview', async (req, res) => {
     const installDifficultyTypes = await InstallDifficultyType.find();
     const slaMlaTypes = await SlaMlaType.find();
     const validateNumTypes = await ValidateNumType.find();
+    const GrossMarginTypes = await GrossMarginType.find();
     
-    let totalLabourHrs = 0;
+    let totalLabourHrs = 0; 
     let totalEquipSell = 0;
     let totalEquipCost = 0;
     let total_labour_cost = 0; 
     let total_labour_sell = 0; 
-    let total_cost_sundries = 0;
+    let total_cost_sundries = 0; 
     let total_sell_sundries = 0; 
     let total_cost_project_management = 0; 
     let total_sell_project_management = 0; 
@@ -609,19 +610,25 @@ app.get('/overview', async (req, res) => {
             total_labour_cost += totalLabourItemMargin;
             total_labour_sell += totalLabourItemMargin;
 
+            // Add labor hours for each item to totalLabourHrs
+            if (item.labour_hrs) {
+              totalLabourHrs += item.labour_hrs * item.stock_qty; // Assuming stock_qty is relevant for labour hours
+            }
+
             billSubtotal += totalPriceSell;
           });
         });
       }
     });
 
-    const projectDays = totalLabourHrs / 8;
-    const projectWeeks = projectDays / 5;
+    const projectDays = totalLabourHrs / 8; 
+    const projectWeeks = projectDays / 5; 
 
     const total_cost_project = totalEquipCost + total_labour_cost + total_cost_sundries + total_cost_project_management;
     const total_sell_project = totalEquipSell + total_labour_sell + total_sell_sundries + total_sell_project_management;
 
     total_gross_profit = total_sell_project - total_cost_project;
+
     // Calculate VAT (14%)
     const vatPercentage = 14 / 100;
     const total_vat = total_sell_project * vatPercentage;
@@ -645,8 +652,9 @@ app.get('/overview', async (req, res) => {
       installDifficultyTypes,
       slaMlaTypes,
       validateNumTypes,
-      totalLabourHrs,   // Total labour hours
-      projectDays,      // Total project days
+      GrossMarginTypes,
+      totalLabourHrs,   
+      projectDays,      
       projectWeeks,
       totalEquipSell,    
       totalEquipCost,   
@@ -669,7 +677,8 @@ app.get('/overview', async (req, res) => {
       projectPercentLabour,
       projectPercentSundries, 
       projectPercentProjectManagement, 
-      total_gross_profit 
+      total_gross_profit,
+      iprice 
     });
   } catch (error) {
     console.error('Error fetching data for overview:', error);
@@ -677,6 +686,41 @@ app.get('/overview', async (req, res) => {
   }
 });
 
+app.post('/update-labour-costs', async (req, res) => {
+  try {
+    const { gross_margin } = req.body;
+    const users = await User.find();
+    
+    let total_labour_cost = 0;
+    let total_labour_sell = 0;
+    const labour_cost = 320;
+
+    const labourMargin = gross_margin ? parseFloat(gross_margin) / 100 : 0;
+
+    users.forEach(user => {
+      if (user.billing) {
+        user.billing.forEach(bill => {
+          bill.items.forEach(item => {
+            const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
+            const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
+            total_labour_cost += totalLabourItemMargin;
+            total_labour_sell += totalLabourItemMargin;
+          });
+        });
+      }
+    });
+    total_labour_sell = total_labour_sell.toFixed(2);
+    total_labour_cost = total_labour_cost.toFixed(2); 
+
+    res.json({
+      total_labour_cost,
+      total_labour_sell
+    });
+  } catch (error) {
+    console.error('Error updating labour costs:', error);
+    res.status(500).send('Error updating labour costs');
+  }
+});
 // Start server
 const port = 1520;
 app.listen(port, () => {
