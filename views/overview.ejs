@@ -12,8 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-        <script src="/js/updateFactor.js" defer></script>
-
 </head>
 
 <body>
@@ -61,23 +59,31 @@
                            <tbody>
                             <tr>
                                 <td>Total Selling Price</td>
-                                <td>R <%= total_sell_project.toFixed(2) %></td>
+                                <td><strong>R <%= total_sell_project.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Selling Price inc. VAT</td>
-                                <td>R <%= total_sell_with_vat.toFixed(2) %></td>
+                                <td><strong>R <%= total_sell_with_vat.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Cost</td>
-                                <td>R  <%= total_cost_project.toFixed(2) %></td>
+                                <td><strong>R <%= total_cost_project.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Gross Profit</td>
-                                <td>R <%= total_gross_profit.toFixed(2) %></td>
+                                <td><strong> R <%= total_gross_profit.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Actual Gross Margin %</td>
-                                <td>%Depends on Difficulty Factor!!</td>
+                                <td><div class="form-group">
+                                    <select id="gross_margin" name="gross_margin" required onchange="updateLabourCosts()">
+                                      <option value="" disabled selected>Select Gross Margin</option>
+                                      <% GrossMarginTypes.forEach(type => { %>
+                                        <option value="<%= type.gross_margin %>"><%= type.gross_margin %></option>
+                                      <% }); %>
+                                    </select>
+                                  </div>
+                                   </td>
                             </tr>
                            </tbody>
                         </table>
@@ -107,7 +113,6 @@
                                 <tr>
                                     <td>Associated Factor</td>
                                     <td>
-                                        <!-- This will display the associated factor -->
                                         <input type="text" id="factor" name="factor" readonly>
                                     </td>
                                 </tr>
@@ -125,7 +130,7 @@
                                 </tr>
                                 <tr>
                                     <td>Number of Preventative Maint. Visits per annum</td>
-                                    <td> <input> </input> </td>
+                                    <td><input> </input></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -168,9 +173,9 @@
                    
                     <tr>
                         <td>Equipment Installation Cost</td>
-                        <td>R <%= total_labour_cost.toFixed(2) %></td>
+                        <td>R <span id="total_labour_cost"><%= parseFloat(total_labour_cost).toFixed(2) %></span></td>
                         <td></td>
-                        <td>R <%=  total_labour_sell.toFixed(2) %></td>
+                        <td>R <span id="total_labour_sell"><%= parseFloat(total_labour_sell).toFixed(2) %></span></td>
                         <td></td>
                         <td> <%= gmLabour.toFixed(2) %>%</td>
                         <td></td>
@@ -232,13 +237,14 @@
             <td > ... </td>
 
            <td> Project Days...</td>
-           <td><%= projectDays.toFixed(2) %></td> 
+           <td><strong> <%= projectDays.toFixed(2) %></strong></td> 
         </tr>
         <tr>
             <td>Installation Hours</td>
-            <td><%= totalLabourHrs %></td>
+            <td><strong><%= totalLabourHrs %></strong></td>
+
           <td>Weeks...</td>
-          <td><%= projectWeeks.toFixed(2) %></td>
+          <td><strong><%= projectWeeks.toFixed(2) %></strong></td>
         </tr>
         <tr>
             <td>Proposal Validity in days</td>
@@ -301,6 +307,11 @@
     </tr>
     </form>
 </table>
+<div>
+    <p>Total Labour Cost: <span id="total_labour_cost"><%= total_labour_cost %></span></p>
+    <p>Total Labour Sell: </p>
+  </div>
+  
 <input type="submit" value="Submit">
                  </div>
                 </div>
@@ -318,6 +329,27 @@
     </div>
     <% }) %>
     </div>
+    <script>
+        function updateLabourCosts() {
+          const grossMargin = document.getElementById('gross_margin').value;
+      
+          fetch('/update-labour-costs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ gross_margin: grossMargin })
+          })
+          .then(response => response.json())
+          .then(data => {
+            // Update the displayed total labour cost and sell values, ensuring 2 decimal places
+            document.getElementById('total_labour_cost').innerText = parseFloat(data.total_labour_cost).toFixed(2);
+            document.getElementById('total_labour_sell').innerText = parseFloat(data.total_labour_sell).toFixed(2);
+          })
+          .catch(error => console.error('Error updating labour costs:', error));
+        }
+      </script>
+      
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
