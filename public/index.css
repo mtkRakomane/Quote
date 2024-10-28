@@ -1,0 +1,21 @@
+.card-sidebar {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .inner-table {
+    width: 100%;
+    border-collapse: collapse; 
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 10px;
+    text-align: left;
+  }
+  th {
+    background-color: lightblue; 
+  }
+  
