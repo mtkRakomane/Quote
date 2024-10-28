@@ -686,41 +686,6 @@ app.get('/overview', async (req, res) => {
   }
 });
 
-app.post('/update-labour-costs', async (req, res) => {
-  try {
-    const { gross_margin } = req.body;
-    const users = await User.find();
-    
-    let total_labour_cost = 0;
-    let total_labour_sell = 0;
-    const labour_cost = 320;
-
-    const labourMargin = gross_margin ? parseFloat(gross_margin) / 100 : 0;
-
-    users.forEach(user => {
-      if (user.billing) {
-        user.billing.forEach(bill => {
-          bill.items.forEach(item => {
-            const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
-            const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
-            total_labour_cost += totalLabourItemMargin;
-            total_labour_sell += totalLabourItemMargin;
-          });
-        });
-      }
-    });
-    total_labour_sell = total_labour_sell.toFixed(2);
-    total_labour_cost = total_labour_cost.toFixed(2); 
-
-    res.json({
-      total_labour_cost,
-      total_labour_sell
-    });
-  } catch (error) {
-    console.error('Error updating labour costs:', error);
-    res.status(500).send('Error updating labour costs');
-  }
-});
 // Start server
 const port = 1520;
 app.listen(port, () => {
