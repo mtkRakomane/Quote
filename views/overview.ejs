@@ -30,7 +30,7 @@
                             <tbody>
                                 <tr>
                                     <td>Job Description</td>
-                                    <td colspan="3">Install</td>
+                                    <td colspan="3"> <input> </input></td>
                                 </tr>
                                 <tr>
                                     <td>Customer Name</td>
@@ -87,8 +87,8 @@
                                       }
                                     %>
                                     <div style="padding: 10px; color: white; background-color: <%= marginColor %>; border-radius: 5px;">
-                                      <%= actualGrossMargin.toFixed(2) %> %
-                                    </div>
+                                        <%= actualGrossMargin.toFixed(2) %>%
+                                    </div>                                    
                                   </td>
                             </tr>
                            </tbody>
@@ -174,7 +174,7 @@
                    
                     <tr>
                         <td>Equipment Installation Cost</td>
-                        <td>R  <span id="total_labour_cost">0.00</span></span></td>
+                        <td>R  <span id="total_labour_cost"><%= parseFloat(total_labour_cost).toFixed(2) %></span></td>
                         <td></td>
                         <td>R <span id="total_labour_sell"><%= parseFloat(total_labour_sell).toFixed(2) %></span></td>
                         <td></td>
@@ -337,8 +337,7 @@
             document.getElementById('hoursValue').innerText = '';
         }
     });
-        </script>
-   
+    </script>
     
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
