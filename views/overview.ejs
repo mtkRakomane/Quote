@@ -75,15 +75,21 @@
                             </tr>
                             <tr>
                                 <td>Actual Gross Margin %</td>
-                                <td><div class="form-group">
-                                    <select id="gross_margin" name="gross_margin" required onchange="updateLabourCosts()">
-                                      <option value="" disabled selected>Select Gross Margin</option>
-                                      <% GrossMarginTypes.forEach(type => { %>
-                                        <option value="<%= type.gross_margin %>"><%= type.gross_margin %></option>
-                                      <% }); %>
-                                    </select>
-                                  </div>
-                                   </td>
+                                <td>
+                                    <% 
+                                      let marginColor = '';
+                                      if (actualGrossMargin < 15) {
+                                        marginColor = 'red';
+                                      } else if (actualGrossMargin >= 15 && actualGrossMargin <= 20) {
+                                        marginColor = 'orange';
+                                      } else {
+                                        marginColor = 'green';
+                                      }
+                                    %>
+                                    <div style="padding: 10px; color: white; background-color: <%= marginColor %>; border-radius: 5px;">
+                                      <%= actualGrossMargin.toFixed(2) %> %
+                                    </div>
+                                  </td>
                             </tr>
                            </tbody>
                         </table>
@@ -96,24 +102,19 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td> <div id="hoursDisplay">Associated Factor <td><span id="hoursValue"></span></td>  </div> </td>
+                                </tr>
+                                <tr>
                                     <td>Installation Difficulty</td>
                                     <td>
                                         <div class="form-group">
-                                            <select id="install_difficulty" name="install_difficulty" required onchange="updateFactor()">
-                                                <option value="" disabled selected>Select an Installation Difficulty</option>
-                                                <% installDifficultyTypes.forEach(type => { %>
-                                                  <option value="<%= type.install_difficulty %>" data-factor="<%= type.factor %>">
-                                                    <%= type.install_difficulty %>
-                                                  </option>
+                                            <select id="descriptionDropdown">
+                                                <option value="">Select an install difficulty</option>
+                                                <% installDifficultyTypes.forEach(item => { %>
+                                                    <option value="<%= item._id %>"><%= item.install_difficulty %></option>
                                                 <% }); %>
-                                              </select>
+                                            </select>                                            
                                         </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Associated Factor</td>
-                                    <td>
-                                        <input type="text" id="factor" name="factor" readonly>
                                     </td>
                                 </tr>
                                                               
@@ -173,14 +174,14 @@
                    
                     <tr>
                         <td>Equipment Installation Cost</td>
-                        <td>R <span id="total_labour_cost"><%= parseFloat(total_labour_cost).toFixed(2) %></span></td>
+                        <td>R  <span id="total_labour_cost">0.00</span></span></td>
                         <td></td>
                         <td>R <span id="total_labour_sell"><%= parseFloat(total_labour_sell).toFixed(2) %></span></td>
                         <td></td>
                         <td> <%= gmLabour.toFixed(2) %>%</td>
                         <td></td>
                         <td><%= projectPercentLabour.toFixed(2) %>%</td>
-                        </tr>
+                    </tr>
                     <tr>
                         <td>P & G's</td>
                         <td>R</td>
@@ -207,7 +208,7 @@
                         <td></td>
                         <td>R <%= total_sell_project_management.toFixed(2) %></td>
                         <td></td>
-                        <td> <%= gmProject.toFixed(2) %>%</td>
+                        <td> <%= gmProjectManagement.toFixed(2) %>%</td>
                         <td></td>
                         <td><%= projectPercentProjectManagement.toFixed(2) %>%</td>
                                 </tr>
@@ -217,9 +218,9 @@
                                     <td></td>
                                     <td>R <%= total_sell_project.toFixed(2) %></td>
                                     <td></td>
-                                    <td>including Discounts of</td>
                                     <td></td>
-                                    <td>R </td>
+                                    <td></td>
+                                    <td> </td>
                                 </tr>
                 </tbody>
             </table>
@@ -258,8 +259,8 @@
                     </select>
                 </div>
             </td>
-            <td>Rate of Exchange </td>
-            <td>R   -</td>
+            <td> </td>
+            <td></td>
         </tr>
     </tbody>
 </table> 
@@ -307,10 +308,6 @@
     </tr>
     </form>
 </table>
-<div>
-    <p>Total Labour Cost: <span id="total_labour_cost"><%= total_labour_cost %></span></p>
-    <p>Total Labour Sell: </p>
-  </div>
   
 <input type="submit" value="Submit">
                  </div>
@@ -330,26 +327,19 @@
     <% }) %>
     </div>
     <script>
-        function updateLabourCosts() {
-          const grossMargin = document.getElementById('gross_margin').value;
-      
-          fetch('/update-labour-costs', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ gross_margin: grossMargin })
-          })
-          .then(response => response.json())
-          .then(data => {
-            // Update the displayed total labour cost and sell values, ensuring 2 decimal places
-            document.getElementById('total_labour_cost').innerText = parseFloat(data.total_labour_cost).toFixed(2);
-            document.getElementById('total_labour_sell').innerText = parseFloat(data.total_labour_sell).toFixed(2);
-          })
-          .catch(error => console.error('Error updating labour costs:', error));
+         document.getElementById('descriptionDropdown').addEventListener('change', async function() {
+        const selectedId = this.value;
+        if (selectedId) {
+            const response = await fetch(`/api/descriptions/${selectedId}`);
+            const data = await response.json();
+            document.getElementById('hoursValue').innerText = data.factor; 
+        } else {
+            document.getElementById('hoursValue').innerText = '';
         }
-      </script>
-      
+    });
+        </script>
+   
+    
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
