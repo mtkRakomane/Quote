@@ -1,5 +1,5 @@
-.card-sidebar {
-    background: white;
+.card-sidebar, .card-main, footer{
+  background-color: #ddd;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -18,4 +18,30 @@
   th {
     background-color: lightblue; 
   }
-  
+  .footer {
+    margin-top: 20px;
+}
+
+.footer footer {
+    padding: 10px 0; 
+}
+
+.footer a {
+    margin-right: 15px; 
+}
+
+.footer button {
+    margin-left: 10px;
+}
+.container-fluid {
+  padding-bottom: 0; 
+}
+
+.card-main, .card-sidebar {
+  margin-bottom: 0; 
+}
+
+.footer {
+  margin-top: 0;
+  padding-top: 10px;
+} 
