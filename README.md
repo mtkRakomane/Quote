@@ -7,3 +7,11 @@
 ![Screenshot 2024-10-01 172743](https://github.com/user-attachments/assets/7fa7436b-8856-4dbd-b9eb-76f5a8f2b4de)
 ![Screenshot 2024-10-04 130002](https://github.com/user-attachments/assets/e7e8e3f2-7509-4807-8c7b-2b4407d4caea)
 ![Screenshot 2024-10-21 100621](https://github.com/user-attachments/assets/28646111-3b45-4956-b35c-138d93cf17f7)
+![Screenshot 2024-10-30 160904](https://github.com/user-attachments/assets/43ebf523-9e82-41b5-bea7-ee76982298d7)
+![Screenshot 2024-10-30 160916](https://github.com/user-attachments/assets/0099e556-9a03-4734-96a8-31af57ad8a1e)
+![Screenshot 2024-10-30 160940](https://github.com/user-attachments/assets/eacd2843-656c-4939-a06c-f651e6611f56)
+![Screenshot 2024-10-30 160955](https://github.com/user-attachments/assets/edba0c50-d699-4250-b324-46a60a584157)
+![Screenshot 2024-10-30 161008](https://github.com/user-attachments/assets/591af737-9bfe-457e-b81d-0f2b342f35d
+![Screenshot 2024-10-30 161014](https://github.com/user-attachments/assets/25cab3ca-bfaf-4a79-bfef-9d122af7cd14)
+![Screenshot 2024-10-30 161035](https://github.com/user-attachments/assets/d1f52e11-32d3-4d84-a5dc-5339e0a0e87a)
+
