@@ -1,21 +1,18 @@
-/* General body styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: black; /* Lightened background for better contrast */
+  background-color: lightgray; 
   margin: 0;
   padding: 0;
 }
 
-/* Form container styling */
 .form-container {
   width: 80%;
-  height: auto; /* Adjust height for flexibility */
+  height: auto; 
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #e0f7fa; /* Change to white for better readability */
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Slightly larger shadow */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .container {
@@ -23,7 +20,6 @@ body {
   max-width: 1200px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #e0f7fa; /* Lighter background for contrast */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
@@ -31,7 +27,7 @@ body {
 h1 {
   text-align: center;
   color: #333;
-  margin-bottom: 20px; /* Added margin for better spacing */
+  margin-bottom: 20px; 
 }
 
 h2, h3, h4, h5 {
@@ -69,15 +65,15 @@ h2, h3, h4, h5 {
 
 input[type="text"], input[type="tel"], input[type="email"], select {
   width: 100%;
-  padding: 12px; /* Increased padding for better usability */
+  padding: 12px; 
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  transition: border-color 0.3s ease; /* Transition for input focus */
+  transition: border-color 0.3s ease; 
 }
 
 input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus, select:focus {
-  border-color: #007bff; /* Highlight border on focus */
+  border-color: #007bff; 
 }
 
 input::placeholder {
@@ -94,16 +90,16 @@ input::placeholder {
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform */
+  transition: background-color 0.3s ease, transform 0.2s ease; 
 }
 
 .submit-btn:hover {
   background-color: #0056b3;
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  transform: translateY(-2px); 
 }
 
 select {
-  height: 45px; /* Increased height for better usability */
+  height: 45px; 
 }
 
 small {
@@ -137,12 +133,12 @@ small {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transition */
+  transition: background-color 0.3s ease, transform 0.2s ease; 
 }
 
 .button-container button:hover, .button-container a:hover {
   background-color: #0056b3;
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  transform: translateY(-2px);
 }
 
 .terms, .signature {
@@ -162,7 +158,7 @@ small {
 .image-text-container img {
   max-width: 150px; 
   max-height: 200px;
-  margin-right: 20px; /* Reduced margin for better alignment */
+  margin-right: 20px; 
 }
 
 .text-container {
@@ -179,11 +175,11 @@ small {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px; /* Added margin for spacing */
+  margin-top: 20px; 
 }
 
 th, td {
-  border-bottom: 1px solid #ccc; /* Lightened border for subtlety */
+  border-bottom: 1px solid #ccc; 
   text-align: center;
   padding: 8px;
 }
@@ -197,4 +193,3 @@ tfoot td {
   text-align: right;
   display: block; 
 }
-
