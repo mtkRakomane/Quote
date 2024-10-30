@@ -5,7 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
    
-    <link rel ="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            background-image: url('https://calm.proteacoin.co.za/Portal/images/HexagonMenu/HexLogo.jpg');
+            background-size: cover; /* Make the background image cover the entire page */
+            background-position: center; /* Center the background image */
+            color: white; /* Change text color for better contrast */
+            font-family: Arial, sans-serif; /* Set a default font */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 100vh; /* Full viewport height */
+            margin: 0; /* Remove default margin */
+        }
+        .form-container {
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            width: 100%; /* Full width */
+        }
+        .card-middle {
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for the form */
+            padding: 30px; /* Increased padding for more space inside the container */
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Add some shadow for depth */
+            max-width: 500px; /* Increased max width for a more open appearance */
+            width: 100%; /* Responsive width */
+            margin: 20px; /* Optional: Add some margin around the container */
+        }
+        .form-group {
+            margin-bottom: 15px; /* Added margin between form groups */
+        }
+        .submit-btn {
+            background-color: #007BFF; /* Button color */
+            color: white; /* Button text color */
+            border: none; /* Remove border */
+            padding: 10px 15px; /* Button padding */
+            border-radius: 5px; /* Rounded corners for the button */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition */
+        }
+        .submit-btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
 </head>
 <body>
     <div class="form-container">
@@ -13,27 +57,39 @@
             <div class="card-body">
                 <h1 id="quote">Login Quote</h1>
                 <form action="/login" method="post">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s" class="img-fluid mb-3" alt="Placeholder image" width="150">
-                    <div class= "form-goup">
-                    <label for ="ref_num">Reference Number: </label>
-                    <input type="text" name="ref_num" id="ref_num" placeholder="Reference Number" required autocomplete="off"> </input>
+                   
+                    <div>
+                        <label>Select Role:</label>
+                        <label>
+                          <input type="radio" name="role" value="user" checked>
+                          User
+                        </label>
+                        <label>
+                          <input type="radio" name="role" value="admin">
+                          Admin
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ref_num">Reference Number: </label>
+                        <input type="text" name="ref_num" id="ref_num" placeholder="Reference Number" required autocomplete="off"> 
                     </div>
     
-                               <div class="form-group">
-                                <label for="name">Sale Person:</label>
-                                <select id="name" name="name" required>
-                                    <option value="" disabled selected>Select a Sale Person</option>
-                                    <% salesPersons.forEach(person => { %>
-                                        <option value="<%= person.Name %>"><%= person.Name%></option>
-                                    <% }); %>
-                                </select>
-                            </div>
+                    <div class="form-group">
+                        <label for="saleName">Sale Persons:</label>
+                        <select id="saleName" name="saleName" required>
+                            <option value="" disabled selected>Select a Sale Person</option>
+                            <% salePeoples.forEach(type => { %>
+                                <option value="<%= type.saleName %>"><%= type.saleName %></option>
+                            <% }); %>
+                        </select>
+                    </div>
        
-                        <button type="submit" class="submit-btn">Login</button>
-                        <p> Make a new Quate! <a href="/signup">signup</a></p>
-                        </form>
+                    <button type="submit" class="submit-btn">Login</button>
+                    <p> Register new Quote! <a href="/signup" style="color: #FFD700;">Register</a></p> <!-- Optional: change link color -->
+                </form>
             </div>
         </div>
-          </div>
+    </div>
 </body>
 </html>
