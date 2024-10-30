@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </head>
-
 <body>
     <div class="container-fluid pt-5 mt-3">
         <% users.forEach(user => { %>
@@ -86,10 +84,11 @@
                                         marginColor = 'green';
                                       }
                                     %>
-                                    <div style="padding: 10px; color: white; background-color: <%= marginColor %>; border-radius: 5px;">
-                                        <%= actualGrossMargin.toFixed(2) %>%
-                                    </div>                                    
-                                  </td>
+                                    <div 
+                                      style="padding: 10px; color: white; background-color: <%= marginColor %>; border-radius: 5px;">
+                                      <%= actualGrossMargin.toFixed(2) %>%
+                                    </div>                                  
+                                  </td>                                      
                             </tr>
                            </tbody>
                         </table>
@@ -142,188 +141,196 @@
             <div class="col-md-7">
                 <div class="card-main">
                     <div class="card-body">
-                              <table class="inner-table">
-                <thead>
-                    <tr>
-                    <th colspan="9" style="text-align: center;"> Sales Breakdown</th>
-                 </tr>
-                    <tr>
-                        <th>Quoted Sections</th>
-                        <th>Cost</th>
-                        <th></th>
-                        <th>Sell</th>
-                        <th></th>
-                        <th>GM %</th>
-                        <th></th>
-                        <th>% of Project</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                   
-                    <tr>
-                        <td>Equipment Cost</td>
-                        <td>R  <%= totalEquipCost.toFixed(2) %> </td>
-                        <td></td>
-                        <td>R <%= totalEquipSell.toFixed(2) %></td>
-                        <td></td>
-                        <td><%= gmEquip.toFixed(2) %>%</td>
-                        <td></td>
-                        <td><%= projectPercentEquip.toFixed(2) %>%</td>
-                    </tr>
-                   
-                    <tr>
-                        <td>Equipment Installation Cost</td>
-                        <td>R  <span id="total_labour_cost"><%= parseFloat(total_labour_cost).toFixed(2) %></span></td>
-                        <td></td>
-                        <td>R <span id="total_labour_sell"><%= parseFloat(total_labour_sell).toFixed(2) %></span></td>
-                        <td></td>
-                        <td> <%= gmLabour.toFixed(2) %>%</td>
-                        <td></td>
-                        <td><%= projectPercentLabour.toFixed(2) %>%</td>
-                    </tr>
-                    <tr>
-                        <td>P & G's</td>
-                        <td>R</td>
-                        <td></td>
-                        <td>R</td>
-                        <td></td>
-                        </td><%= gmSundries.toFixed(2) %>%</td>
-                        <td></td>
-                        <td>%</td>
-                        </tr>
-                        <tr>
-                            <td>Sundries and Consumables</td>
-                            <td>R  <%= total_cost_sundries.toFixed(2) %></td>
-                            <td></td>
-                            <td>R  <%= total_sell_sundries.toFixed(2) %></td>
-                            <td></td>
-                            <td><%= gmProjectManagement.toFixed(2) %>%</td>
-                            <td></td>
-                            <td><%= projectPercentSundries.toFixed(2) %>%</td>
-                            </tr>
-                            <tr>
-                        <td>Project Management</td>
-                        <td>R  <%= total_cost_project_management.toFixed(2) %></td>
-                        <td></td>
-                        <td>R <%= total_sell_project_management.toFixed(2) %></td>
-                        <td></td>
-                        <td> <%= gmProjectManagement.toFixed(2) %>%</td>
-                        <td></td>
-                        <td><%= projectPercentProjectManagement.toFixed(2) %>%</td>
+                        <table class="inner-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="9" style="text-align: center;">Sales Breakdown</th>
+                                </tr>
+                                <tr>
+                                    <th>Quoted Sections</th>
+                                    <th>Cost</th>
+                                    <th></th>
+                                    <th>Sell</th>
+                                    <th></th>
+                                    <th>GM %</th>
+                                    <th></th>
+                                    <th>% of Project</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Equipment Cost</td>
+                                    <td>R <%= totalEquipCost.toFixed(2) %></td>
+                                    <td></td>
+                                    <td>R <%= totalEquipSell.toFixed(2) %></td>
+                                    <td></td>
+                                    <td><%= gmEquip.toFixed(2) %>%</td>
+                                    <td></td>
+                                    <td><%= projectPercentEquip.toFixed(2) %>%</td>
+                                </tr>
+                                <tr>
+                                    <td>Equipment Installation Cost</td>
+                                    <td>R <span id="total_labour_cost"><%= parseFloat(total_labour_cost).toFixed(2) %></span></td>
+                                    <td></td>
+                                    <td>R <span id="total_labour_sell"><%= parseFloat(total_labour_sell).toFixed(2) %></span></td>
+                                    <td></td>
+                                    <td><%= gmLabour.toFixed(2) %>%</td>
+                                    <td></td>
+                                    <td><%= projectPercentLabour.toFixed(2) %>%</td>
+                                </tr>
+                                <tr>
+                                    <td>P & G's</td>
+                                    <td>R</td>
+                                    <td></td>
+                                    <td>R</td>
+                                    <td></td>
+                                    <td><%= gmSundries.toFixed(2) %>%</td>
+                                    <td></td>
+                                    <td>%</td>
+                                </tr>
+                                <tr>
+                                    <td>Sundries and Consumables</td>
+                                    <td>R <%= total_cost_sundries.toFixed(2) %></td>
+                                    <td></td>
+                                    <td>R <%= total_sell_sundries.toFixed(2) %></td>
+                                    <td></td>
+                                    <td><%= gmProjectManagement.toFixed(2) %>%</td>
+                                    <td></td>
+                                    <td><%= projectPercentSundries.toFixed(2) %>%</td>
+                                </tr>
+                                <tr>
+                                    <td>Project Management</td>
+                                    <td>R <%= total_cost_project_management.toFixed(2) %></td>
+                                    <td></td>
+                                    <td>R <%= total_sell_project_management.toFixed(2) %></td>
+                                    <td></td>
+                                    <td><%= gmProjectManagement.toFixed(2) %>%</td>
+                                    <td></td>
+                                    <td><%= projectPercentProjectManagement.toFixed(2) %>%</td>
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td>R  <%= total_cost_project.toFixed(2) %></td>
+                                    <td>R <%= total_cost_project.toFixed(2) %></td>
                                     <td></td>
                                     <td>R <%= total_sell_project.toFixed(2) %></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td> </td>
+                                    <td></td>
                                 </tr>
-                </tbody>
-            </table>
-<hr>
-<table >
-    <thead>
-        <th
-        colspan="2" style="text-align: center;">Hours
-        </th>
-        <th colspan="2" style="text-align: center;">Project Days</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Project Management Hours</td>
-            <td > ... </td>
-
-           <td> Project Days...</td>
-           <td><strong> <%= projectDays.toFixed(2) %></strong></td> 
-        </tr>
-        <tr>
-            <td>Installation Hours</td>
-            <td><strong><%= totalLabourHrs %></strong></td>
-
-          <td>Weeks...</td>
-          <td><strong><%= projectWeeks.toFixed(2) %></strong></td>
-        </tr>
-        <tr>
-            <td>Proposal Validity in days</td>
-            <td>
-                <div class="form-group">
-                    <select id="validate_num_days" name="validate_num_days" required>
-                        <option value="" disabled selected>Select a Validity in days</option>
-                        <% validateNumTypes.forEach(type => { %>
-                            <option value="<%= type.validate_num_days %>"><%= type.validate_num_days %></option>
-                        <% }); %>
-                    </select>
-                </div>
-            </td>
-            <td> </td>
-            <td></td>
-        </tr>
-    </tbody>
-</table> 
-<table>
-    <form action="checkbox" method="POST">
-        <theade> <th> <label>Include the following modules</label> </th></theade>
-       <br>
-       <tr>
-        <td> <input type="checkbox" id="quote1" name="quote1" value="MSS"> 
-        <label for="quote1">MSS</label> </td>
-        <td> 
-            <input type="checkbox" id="quote5" name="quote5" value="offset">
-            <label for="quote5">Offset Mon</label>
-            </td>
-    </tr>
-
-       <tr>
-      <td> <input type="checkbox" id="quote2" name="quote2" value="SLA">
-        <label for="quote2">SLA</label></td> 
-        <td>
-            <input type="checkbox" id="quote6" name="quote6" value="scarfaceLive">
-            <label for="quote6">Scarface live</label>
-        </td>
-       </tr>
-       <tr>
-         <td>
-            <input type="checkbox" id="quote3" name="quote3" value="monResp">
-        <label for="quote3">Mon & Resp</label>
-         </td>
-        <td>
-            <input type="checkbox" id="quote7" name="quote7" value="mobile">
-            <label for="quote7">SF Mobile</label>
-        </td>
-    </tr>
-       
-    <tr>
-        <td>
-            <Input type="checkbox" id="quote4" name="quote4" value="vidFied">
-                <label for="quote4">VideoFied</label>
-        </td>
-        <td>
-            <input type="checkbox" id="quote8" name="quote8" value="ajax">
-            <label for="quote8">AJAX</label>
-        </td>
-    </tr>
-    </form>
-</table>
-  
-<input type="submit" value="Submit">
-                 </div>
-                </div>
-              </div>
-              <a href="/">Back to Home</a>
-              <div class="footer">
-                <footer class="container d-flex justify-content-between align-items-center">
-                    <div>
-                        <button type="button">Admin</button>
-                        <button type="button">Print BOQ</button>
+                            </tbody>
+                        </table>
+            
+                        <hr>
+            
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="2" style="text-align: center;">Hours</th>
+                                    <th colspan="2" style="text-align: center;">Project Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Project Management Hours</td>
+                                    <td>...</td>
+                                    <td>Project Days...</td>
+                                    <td><strong><%= projectDays.toFixed(2) %></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Installation Hours</td>
+                                    <td><strong><%= totalLabourHrs %></strong></td>
+                                    <td>Weeks...</td>
+                                    <td><strong><%= projectWeeks.toFixed(2) %></strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Proposal Validity in days</td>
+                                    <td>
+                                        <div class="form-group">
+                                            <select id="validate_num_days" name="validate_num_days" required>
+                                                <option value="" disabled selected>Select a Validity in days</option>
+                                                <% validateNumTypes.forEach(type => { %>
+                                                    <option value="<%= type.validate_num_days %>"><%= type.validate_num_days %></option>
+                                                <% }); %>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+            
+                        <hr>
+            
+                        <form action="checkbox" method="POST">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="text-align: center;">Include the following modules</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="quote1" name="quote1" value="MSS">
+                                            <label for="quote1">MSS</label>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="quote5" name="quote5" value="offset">
+                                            <label for="quote5">Offset Mon</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="quote2" name="quote2" value="SLA">
+                                            <label for="quote2">SLA</label>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="quote6" name="quote6" value="scarfaceLive">
+                                            <label for="quote6">Scarface live</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="quote3" name="quote3" value="monResp">
+                                            <label for="quote3">Mon & Resp</label>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="quote7" name="quote7" value="mobile">
+                                            <label for="quote7">SF Mobile</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="quote4" name="quote4" value="vidFied">
+                                            <label for="quote4">VideoFied</label>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="quote8" name="quote8" value="ajax">
+                                            <label for="quote8">AJAX</label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input type="submit" value="Submit" class="btn btn-primary">
+                        </form>
                     </div>
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s" class="img-fluid mb-3" alt="Placeholder image" width="150">
-                </footer>
+                </div>
             </div>
+              
     </div>
+    <div class="footer">
+        <footer class="container d-flex justify-content-between align-items-center">
+            <div>
+                <a href="/">Back to Home</a>
+            </div>
+            <div class="d-flex align-items-center">
+                <button type="button" class="me-2">Admin</button>
+                <button type="button">Print BOQ</button>
+            </div>
+        </footer>
+    </div>    
     <% }) %>
     </div>
     <script>
@@ -338,7 +345,6 @@
         }
     });
     </script>
-    
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
