@@ -59,19 +59,19 @@
                            <tbody>
                             <tr>
                                 <td>Total Selling Price</td>
-                                <td><strong>R <%= total_sell_project.toFixed(2) %></strong></td>
+                                <td><strong>R  <span id="total_sell_project"><%= total_sell_project.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Selling Price inc. VAT</td>
-                                <td><strong>R <%= total_sell_with_vat.toFixed(2) %></strong></td>
+                                <td><strong>R <span id="total_sell_with_vat"><%= total_sell_with_vat.toFixed(2) %></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Cost</td>
-                                <td><strong>R <%= total_cost_project.toFixed(2) %></strong></td>
+                                <td><strong>R <span id="total_cost_project"><%= total_cost_project.toFixed(2) %></span></strong></td>
                             </tr>
                             <tr>
                                 <td>Total Gross Profit</td>
-                                <td><strong> R <%= total_gross_profit.toFixed(2) %></strong></td>
+                                <td><strong> R <span id="total_gross_profit"><%= total_gross_profit.toFixed(2) %></span></strong></td>
                             </tr>
                             <tr>
                                 <td>Actual Gross Margin %</td>
@@ -88,7 +88,7 @@
                                     %>
                                     <div 
                                       style="padding: 10px; color: white; background-color: <%= marginColor %>; border-radius: 5px;">
-                                      <%= actualGrossMargin.toFixed(2) %>%
+                                      <span id="actualGrossMargin"><%= actualGrossMargin.toFixed(2) %> %</span>
                                     </div>                                  
                                   </td>                                      
                             </tr>
@@ -212,9 +212,9 @@
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td>R <%= total_cost_project.toFixed(2) %></td>
+                                    <td>R <span id="total_cost_project"><%= total_cost_project.toFixed(2) %></td>
                                     <td></td>
-                                    <td>R <%= total_sell_project.toFixed(2) %></td>
+                                    <td>R  <span id="total_sell_project"><%= total_sell_project.toFixed(2) %></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -338,11 +338,21 @@
     </div>    
     <% }) %>
     </div>
-
-<script>
+   <!--Un Wanted!!-->
+    <div>
+        <h3>Project Totals</h3>
+        <p>r<span id="total_cost_project"><%= total_cost_project.toFixed(2) %></span></p>
+        <p>r <span id="total_sell_project"><%= total_sell_project.toFixed(2) %></p>
+        <p>r<span id="total_gross_profit"><%= total_gross_profit.toFixed(2) %></span></p>
+        <p>r<span id="total_vat"><%= total_vat.toFixed(2) %></span></p>
+        <p>r<span id="total_sell_with_vat"><%= total_sell_with_vat.toFixed(2) %></span></p>
+        <p><span id="actualGrossMargin"><%= actualGrossMargin.toFixed(2) %></span></p>
+    </div> 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('descriptionDropdown').addEventListener('change', async function() {
             const selectedId = this.value;
-            
+
             if (selectedId) {
                 const response = await fetch(`/api/descriptions/${selectedId}`);
                 const data = await response.json();
@@ -350,15 +360,19 @@
                 const factor = data.factor;
                 document.getElementById('hoursValue').innerText = factor;
 
+                // Initial values from EJS
                 const initialTotalLabourCost = <%= total_labour_cost %>;
                 const initialTotalLabourSell = <%= total_labour_sell %>;
 
+                // Calculate updated values based on selected factor
                 const updatedTotalLabourCost = factor * initialTotalLabourCost;
                 const updatedTotalLabourSell = factor * initialTotalLabourSell;
 
+                // Update labour costs in the UI
                 document.getElementById('total_labour_cost').innerText = updatedTotalLabourCost.toFixed(2);
                 document.getElementById('total_labour_sell').innerText = updatedTotalLabourSell.toFixed(2);
 
+                // Retrieve other constants from EJS
                 const totalEquipSells = <%= totalEquipSell %>;
                 const totalEquipCosts = <%= totalEquipCost %>;
                 const totalCostSundries = <%= total_cost_sundries %>;
@@ -366,16 +380,20 @@
                 const totalCostProjectManagement = <%= total_cost_project_management %>;
                 const totalSellProjectManagement = <%= total_sell_project_management %>;
 
+                // Calculate updated totals for the project
                 const updatedTotalCostProject = totalEquipCosts + updatedTotalLabourCost + totalCostSundries + totalCostProjectManagement;
                 const updatedTotalSellProject = totalEquipSells + updatedTotalLabourSell + totalSellSundries + totalSellProjectManagement;
                 const updatedTotalGrossProfit = updatedTotalSellProject - updatedTotalCostProject;
 
-                const vatPercentage = 14 / 100;
+                // VAT calculations
+                const vatPercentage = 0.14; // 14%
                 const updatedTotalVat = updatedTotalSellProject * vatPercentage;
                 const updatedTotalSellWithVat = updatedTotalSellProject + updatedTotalVat;
 
+                // Actual Gross Margin calculation
                 const updatedActualGrossMargin = ((updatedTotalSellProject - updatedTotalCostProject) / updatedTotalSellProject) * 100;
 
+                // Update the UI with calculated values
                 document.getElementById('total_cost_project').innerText = updatedTotalCostProject.toFixed(2);
                 document.getElementById('total_sell_project').innerText = updatedTotalSellProject.toFixed(2);
                 document.getElementById('total_gross_profit').innerText = updatedTotalGrossProfit.toFixed(2);
@@ -383,11 +401,20 @@
                 document.getElementById('total_sell_with_vat').innerText = updatedTotalSellWithVat.toFixed(2);
                 document.getElementById('actualGrossMargin').innerText = updatedActualGrossMargin.toFixed(2);
             } else {
+                // Reset display if no selection is made
                 document.getElementById('hoursValue').innerText = '';
+                document.getElementById('total_labour_cost').innerText = '<%= total_labour_cost.toFixed(2) %>';
+                document.getElementById('total_labour_sell').innerText = '<%= total_labour_sell.toFixed(2) %>';
+                document.getElementById('total_cost_project').innerText = '<%= total_cost_project.toFixed(2) %>';
+                document.getElementById('total_sell_project').innerText = '<%= total_sell_project.toFixed(2) %>';
+                document.getElementById('total_gross_profit').innerText = '<%= total_gross_profit.toFixed(2) %>';
+                document.getElementById('total_vat').innerText = '<%= total_vat.toFixed(2) %>';
+                document.getElementById('total_sell_with_vat').innerText = '<%= total_sell_with_vat.toFixed(2) %>';
+                document.getElementById('actualGrossMargin').innerText = '<%= actualGrossMargin.toFixed(2) %>';
             }
         });
-    </script>    
-    
+    });
+</script>
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
