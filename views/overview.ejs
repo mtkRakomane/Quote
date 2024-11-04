@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </head>
+
 <body>
     <div class="container-fluid pt-5 mt-3">
         <% users.forEach(user => { %>
@@ -313,8 +315,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <input type="submit" value="Submit" class="btn btn-primary">
-                        </form>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <input type="submit" value="Submit" class="btn btn-primary">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s" class="img-fluid mb-3 ms-auto" alt="Placeholder image" width="100px" height="150px">
+                            </div>
+                                 </form>
                     </div>
                 </div>
             </div>
@@ -333,18 +338,56 @@
     </div>    
     <% }) %>
     </div>
-    <script>
-         document.getElementById('descriptionDropdown').addEventListener('change', async function() {
-        const selectedId = this.value;
-        if (selectedId) {
-            const response = await fetch(`/api/descriptions/${selectedId}`);
-            const data = await response.json();
-            document.getElementById('hoursValue').innerText = data.factor; 
-        } else {
-            document.getElementById('hoursValue').innerText = '';
-        }
-    });
-    </script>
+
+<script>
+        document.getElementById('descriptionDropdown').addEventListener('change', async function() {
+            const selectedId = this.value;
+            
+            if (selectedId) {
+                const response = await fetch(`/api/descriptions/${selectedId}`);
+                const data = await response.json();
+
+                const factor = data.factor;
+                document.getElementById('hoursValue').innerText = factor;
+
+                const initialTotalLabourCost = <%= total_labour_cost %>;
+                const initialTotalLabourSell = <%= total_labour_sell %>;
+
+                const updatedTotalLabourCost = factor * initialTotalLabourCost;
+                const updatedTotalLabourSell = factor * initialTotalLabourSell;
+
+                document.getElementById('total_labour_cost').innerText = updatedTotalLabourCost.toFixed(2);
+                document.getElementById('total_labour_sell').innerText = updatedTotalLabourSell.toFixed(2);
+
+                const totalEquipSells = <%= totalEquipSell %>;
+                const totalEquipCosts = <%= totalEquipCost %>;
+                const totalCostSundries = <%= total_cost_sundries %>;
+                const totalSellSundries = <%= total_sell_sundries %>;
+                const totalCostProjectManagement = <%= total_cost_project_management %>;
+                const totalSellProjectManagement = <%= total_sell_project_management %>;
+
+                const updatedTotalCostProject = totalEquipCosts + updatedTotalLabourCost + totalCostSundries + totalCostProjectManagement;
+                const updatedTotalSellProject = totalEquipSells + updatedTotalLabourSell + totalSellSundries + totalSellProjectManagement;
+                const updatedTotalGrossProfit = updatedTotalSellProject - updatedTotalCostProject;
+
+                const vatPercentage = 14 / 100;
+                const updatedTotalVat = updatedTotalSellProject * vatPercentage;
+                const updatedTotalSellWithVat = updatedTotalSellProject + updatedTotalVat;
+
+                const updatedActualGrossMargin = ((updatedTotalSellProject - updatedTotalCostProject) / updatedTotalSellProject) * 100;
+
+                document.getElementById('total_cost_project').innerText = updatedTotalCostProject.toFixed(2);
+                document.getElementById('total_sell_project').innerText = updatedTotalSellProject.toFixed(2);
+                document.getElementById('total_gross_profit').innerText = updatedTotalGrossProfit.toFixed(2);
+                document.getElementById('total_vat').innerText = updatedTotalVat.toFixed(2);
+                document.getElementById('total_sell_with_vat').innerText = updatedTotalSellWithVat.toFixed(2);
+                document.getElementById('actualGrossMargin').innerText = updatedActualGrossMargin.toFixed(2);
+            } else {
+                document.getElementById('hoursValue').innerText = '';
+            }
+        });
+    </script>    
+    
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
