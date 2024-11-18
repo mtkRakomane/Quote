@@ -67,12 +67,12 @@
 
             <% groupedData[billTitle].forEach(function(data) { %>
                 <tr>
-                    <td><%= data.stock_code %></td>
-                    <td><%= data.product_type %></td>
-                    <td><%= data.descriptions %></td>
-                    <td><%= data.stock_qty %></td>
-                    <td>R <%= data.unit_cost.toFixed(2) %></td>
-                    <td>R <%= data.total_price.toFixed(2) %></td>
+                    <td> <%= data.stock_code %> </td>
+                    <td> <%= data.product_type %> </td>
+                    <td> <%= data.descriptions %> </td>
+                    <td> <%= data.stock_qty %> </td>
+                    <td>R <%= data.unit_cost.toFixed(2) %> </td>
+                    <td>R <%= data.total_price.toFixed(2) %> </td>
                 </tr>
                 <% 
                     billSubtotal += data.total_price;
@@ -123,7 +123,6 @@
         </tbody>
     </table>
 <% }) %>
-
  
       <p>Terms and Conditions</p>
       <div class="terms">
