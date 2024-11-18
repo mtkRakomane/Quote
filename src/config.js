@@ -1,11 +1,8 @@
-
 const express = require('express');
 const pasth = require('path');
 const bcrypt = require('bcrypt');
 
-
 const app = express();
-
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 
@@ -21,6 +18,7 @@ connect.then(() =>{
 })
 
 const userSchema = new mongoose.Schema({
+    saleName:String,
     ref_num:String,
     name: String,
     email: String,
@@ -37,12 +35,14 @@ const userSchema = new mongoose.Schema({
                 type:{
                     descriptions: String,
                     install_difficulty: String,
+                    factor: Number,
                     sla_mla: String,
                     maintain_visit: String,
                     validate_num_days: String,
                     stock_code:String,
                     stock_qty:String,
                     unit_cost:String,
+                    hours: String,
                     product_type: String,
                     equip_margin:String,
                     labour_margin:String,
@@ -56,18 +56,18 @@ const userSchema = new mongoose.Schema({
         },
        required:true,   
     },
-],
-    
+],  
 })
 const users = mongoose.model("data",userSchema);
 app.get('/',(req,res)=>{
     res.sendFile( path.join(__dirname,'index.html'))
 })
 app.post('/post',async(req,res)=>{
-    const{ref_num,descriptions,name,email,cell,role,customer_name,customer_call_person,customer_email, install_difficulty,
-        sla_mla,maintain_visit,validate_num_days,bill_title,stock_code,stock_qty,unit_cost,product_type,
+    const{saleName,ref_num,descriptions,name,email,cell,role,customer_name,customer_call_person,customer_email, install_difficulty,
+        factor,sla_mla,maintain_visit,validate_num_days,bill_title,stock_code,stock_qty,unit_cost,hours,product_type,
         equip_margin,labour_margin,labour_hrs,maintenance_hrs,supplier} = req.body
 const user = new users({
+    saleName,
     ref_num,
     name ,
     email,
@@ -82,12 +82,14 @@ const user = new users({
         items: [ {
             descriptions,
             install_difficulty,
+            factor,
             sla_mla ,
             maintain_visit,
             validate_num_days,
             stock_code,
             stock_qty,
             unit_cost,
+            hours,
             product_type,
             equip_margin,
             labour_margin,
@@ -98,9 +100,7 @@ const user = new users({
         ]
     },
 ],
-
 })
-
 try {
     await user.save();
     console.log("User data saved successfully:", user);
@@ -110,7 +110,5 @@ try {
     res.status(500).send("Error saving user data");
 }
 });
-
 const collection = new mongoose.model('Quantity',userSchema);
-
 module.exports = collection;
