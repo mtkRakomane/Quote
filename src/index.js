@@ -483,11 +483,10 @@ app.get('/printAllBilling', async (req, res) => {
               total_price: itemTotalPrice,
               total_labour_margin: totalLabourItemMargin,
               total_equip_margin: totalEquipMargin,
+              unitLabourMargin:  unitLabourMargin,
             });
           });
-
           const itemSubtotal = billSubtotal + totalLabourMargin + scPrice + pmPrice + iprice;
-
           billingData.forEach(data => {
             if (data.bill_title === bill.bill_title) {
               data.total_labour_margin = totalLabourMargin;
@@ -497,7 +496,6 @@ app.get('/printAllBilling', async (req, res) => {
         });
       }
     });
-
     const salesPersonName = billingData.length > 0 ? billingData[0].saleName : '';
     const salesPersonCell = billingData.length > 0 ? billingData[0].cell : '';
     const customerEmail = billingData.length > 0 ? billingData[0].customer_email : '';
@@ -532,15 +530,14 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
     const item = billingEntry.items[itemIndex];
     
     const scPrice = 1529.47;// this must be totalPrice for item multiply by 3%
-    const pmPrice = 1058.82;
+    const pmPrice = 1058.82;// totalprice per item multiply by 15%
     const iprice = 3150.30;
-    const labour_cost = 320;
 
     const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
     const total_equip_margin = item.unit_cost / (1 - equipMargin);
     
     const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
-    const unit_labour_margin = (labour_cost * 0.3) / (1 - labourMargin);
+    const unit_labour_margin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
 
     const factor = item.factor || 1; 
     const total_labour_margin = item.stock_qty * item.labour_hrs * factor;
@@ -605,7 +602,6 @@ app.get('/overview', async (req, res) => {
       const slaMlaTypes = await SlaMlaType.find();
       const validateNumTypes = await ValidateNumType.find();
      
-      
       let totalLabourHrs = 0; 
       let totalEquipSell = 0;
       let totalEquipCost = 0;
@@ -661,27 +657,21 @@ app.get('/overview', async (req, res) => {
       const total_cost_project = totalEquipCost + total_labour_cost + total_cost_sundries + total_cost_project_management;
       const total_sell_project = totalEquipSell + total_labour_sell + total_sell_sundries + total_sell_project_management;
 
-  
-
-      // Calculate VAT (14%)
       const vatPercentage = 14 / 100;
       const total_vat = total_sell_project * vatPercentage;
       const total_sell_with_vat = total_sell_project + total_vat;
 
-      // Calculate GM (gross margin) for each category
       const gmEquip = ((totalEquipSell - totalEquipCost) / totalEquipSell) * 100;
       const gmLabour = ((total_labour_sell - total_labour_cost) / total_labour_sell) * 100;
       const gmSundries = ((total_sell_sundries - total_cost_sundries) / total_sell_sundries) * 100;
       const gmProjectManagement = ((total_sell_project_management - total_cost_project_management) / total_sell_project_management) * 100;
       const gmProject = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
-
-      // Calculate project percentage for each category
+    
       const projectPercentEquip = (totalEquipSell / total_sell_project) * 100;
       const projectPercentLabour = (total_labour_sell / total_sell_project) * 100;
       const projectPercentSundries = (total_sell_sundries / total_sell_project) * 100;
       const projectPercentProjectManagement = (total_sell_project_management / total_sell_project) * 100;
-
-      // Actual Gross Margin calculation
+    
       const actualGrossMargin = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
 
       res.render('overview', {
@@ -717,7 +707,6 @@ app.get('/overview', async (req, res) => {
           actualGrossMargin,  
           iprice 
       });
-
   } catch (error) {
       console.error('Error fetching data for overview:', error);
       res.status(500).send('Error fetching data for overview');
@@ -729,4 +718,3 @@ const port = 1520;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
- 
