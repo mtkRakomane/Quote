@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register Quote</title>
     <link rel ="stylesheet" href="/style.css">
 </head>
 <body>
@@ -16,19 +16,19 @@
                     <div class="card-sidebar">
                         <div class="card-body">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLl5RFBWd70u8xNBu3mBTfHBq-Y1TzCuXJ5w&s" class="img-fluid mb-3" alt="Placeholder image" width="150" height="125">
-                            <h2>Sale's Person Details</h2>
+                            <h2>***Sale's Person Details***</h2>
 
                             <div class= "form-group">
                                 <label for ="ref_num">Reference Number: </label>
                                 <input type="text" name="ref_num" id="ref_num" placeholder="Refference Number" required autocomplete="off"> </input>
                                 </div>
-                                
+
                         <div class="form-group">
-                            <label for="name">Sale Person:</label>
-                            <select id="name" name="name" required>
+                            <label for="saleName">Sale Persons:</label>
+                            <select id="saleName" name="saleName" required>
                                 <option value="" disabled selected>Select a Sale Person</option>
-                                <% salesPersons.forEach(person => { %>
-                                    <option value="<%= person.Name %>"><%= person.Name%></option>
+                                <% salePeoples.forEach(type => { %>
+                                    <option value="<%= type.saleName %>"><%= type.saleName %></option>
                                 <% }); %>
                             </select>
                         </div>
@@ -48,7 +48,7 @@
                             <input type="text" name="role" id="role" placeholder="Sale Person Role" required autocomplete="off"></input>
                         </div>
 
-                        <h3>Customer's Details</h3>
+                        <h3>***Customer's Details***</h3>
 
                                     <div class= "form-group">
                                         <label for ="customer_name">Customer Name:  </label>
@@ -75,7 +75,7 @@
                 <div class="card-right">
                     <div class="card-body">
 
-                        <h4>Billing</h4>
+                        <h4>***Billing***</h4>
                         <hr>
                         <div class= "form-group">
                             <label for ="bill_title">Bill Title: </label>
@@ -83,22 +83,28 @@
                             </div>
 
                             <hr>
-                            <h5>Items</h5>
+                            <h5>***Items***</h5>
 
                             <div class= "form-group">
                                 <label for="descriptions"> Description:</label>
                                 <input type="text" name="descriptions" id="descriptions" placeholder="Description" required autocomplete="off"> </input>
                             </div>
+  <div class="form-group">
+    <label for="install_difficulty">Installation Difficulty:</label>
+    <select id="install_difficulty" name="install_difficulty" required>
+      <option value="" disabled selected>Select an install difficulty</option>
+      <% installDifficultyTypes.forEach(item => { %>
+        <option value="<%= item._id %>"><%= item.install_difficulty %></option>
+      <% }); %>
+    </select>
+  </div>
+   <div class="form-group">
+    <label id="hoursDisplay">Associated Factor: </label>
+    <span id="hoursValue"></span>
+   </div>
+  <input type="hidden" id="selectedInstallDifficulty" name="selected_install_difficulty">
+  <input type="hidden" id="selectedFactor" name="selected_factor">
 
-                            <div class="form-group">
-                                <label for="install_difficulty">Installation Difficulty Factor:</label>
-                                <select id="install_difficulty" name="install_difficulty" required>
-                                    <option value="" disabled selected>Select a Installation Difficulty Factor</option>
-                                    <% installDifficultyTypes.forEach(type => { %>
-                                        <option value="<%= type.install_difficulty %>"><%= type.install_difficulty %></option>
-                                    <% }); %>
-                                </select>
-                            </div>
                             <div class="form-group">
                                 <label for="sla_mla">SLA & MSS Period in Months:</label>
                                 <select id="sla_mla" name="sla_mla" required>
@@ -130,6 +136,7 @@
                                 <label for ="stock_qty">Stock Quantity: </label>
                                 <input type="text" name="stock_qty" id="stock_qty" placeholder="Stock Quantity:" required autocomplete="off"> </input>
                                 </div>
+                             
                                 <div class= "form-group">
                                     <label for ="unit_cost">Unit Cost: </label>
                                     <input type="text" name="unit_cost" id="unit_cost" placeholder="Unit Cost:" required autocomplete="off"> </input>
@@ -144,6 +151,7 @@
                                             <% }); %>
                                         </select>
                                     </div>
+
                                         <div class= "form-group">
                                             <label for ="equip_margin">Equipment Margin: </label>
                                             <input type="text" name="equip_margin" id="equip_margin" placeholder="Equipment Margin:" required autocomplete="off"> </input>
@@ -168,14 +176,29 @@
                                                                     <option value="<%= type.supplier %>"><%= type.supplier %></option>
                                                                 <% }); %>
                                                             </select>
-                                                        </div>                  
+                                                        </div>              
                     </div>
                 </div>
             </div>
-
                 <button type="submit" class="submit-btn">signup</button>
-                
                 </form>
                 </div>
+                <script>
+                    document.getElementById('install_difficulty').addEventListener('change', async function() {
+                      const selectedDifficulty = this.value;
+                      if (selectedDifficulty) {
+                        const response = await fetch(`/api/descriptions/${selectedDifficulty}`);
+                        const data = await response.json();
+                        document.getElementById('hoursValue').innerText = data.factor; 
+                  
+                        document.getElementById('selectedInstallDifficulty').value = selectedDifficulty; 
+                        document.getElementById('selectedFactor').value = data.factor;
+                      } else {
+                        document.getElementById('hoursValue').innerText = '';
+                        document.getElementById('selectedInstallDifficulty').value = '';
+                        document.getElementById('selectedFactor').value = '';
+                      }
+                    });
+                  </script>
 </body>
 </html>
