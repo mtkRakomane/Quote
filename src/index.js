@@ -20,24 +20,6 @@ mongoose.connect('mongodb://localhost:27017/Quantity', {
   console.error('Database connection error:', err);
 });
 
-const priceSchema = new mongoose.Schema({
-  scPrice: Number,
-  pmPrice: Number,
-  icPrice: Number
-});
-
-const Price = mongoose.model('Price', priceSchema);
-
-// Your Mongoose model
-const YourModelSchema = new mongoose.Schema({
-  description: String,
-  hours: Number,
-  quarterly_maintenance: String
-});
-
-const YourModel = mongoose.model('YourModel', YourModelSchema);
-
-
 // Define schemas and models
 const salePeopleSchema = new mongoose.Schema({saleName: String});
 const SalePeopleType = mongoose.model('salePeople', salePeopleSchema);
@@ -57,25 +39,26 @@ const ProductType = mongoose.model('ProductType', productTypeSchema);
 const supplyTypeSchema = new mongoose.Schema({ supplier: String });
 const SupplyType = mongoose.model('SupplyType', supplyTypeSchema);
 
-const difficultNumSchema = new mongoose.Schema({factor: Number});
-const difficultNumType = mongoose.model('difficultNumType', difficultNumSchema);
-
 const userSchema = new mongoose.Schema({
   ref_num: String, saleName: String, email: String, cell: String, role: String, customer_name: String, customer_call_person: String,customer_email: String,
   billing: [{
     bill_title: String,
-   
     items:[ {
-      descriptions: String, install_difficulty: String, sla_mla: String, maintain_visit: String, validate_num_days: String, stock_code: String, stock_qty: String, 
+      descriptions: String,
+      install_difficulty: String,
+      factor: Number,
+      sla_mla: String, 
+      maintain_visit: String,
+      validate_num_days: String,
+      stock_code: String,
+      stock_qty: String, 
       unit_cost: String,
-      factor: String,
       product_type: String,
       equip_margin: String,
       labour_margin: String,
       labour_hrs: String,
       maintenance_hrs: String,
       supplier: String,
-      gross_margin: String,
   }]
   }],
 });
@@ -100,10 +83,9 @@ app.get('/signup', async (req, res) => {
     const installDifficultyTypes = await InstallDifficultyType.find();
     const productTypes = await ProductType.find();
     const supplyTypes = await SupplyType.find();
-    const GrossMarginTypes = await GrossMarginType.find();
-
+   
     res.render('signup', {
-      validateNumTypes, slaMlaTypes, installDifficultyTypes, productTypes, supplyTypes,salePeoples,GrossMarginTypes,
+      validateNumTypes, slaMlaTypes, installDifficultyTypes, productTypes, supplyTypes,salePeoples,
     });
   } catch (err) {
     console.error('Error fetching data for signup:', err);
@@ -116,8 +98,12 @@ app.post('/signup', async (req, res) => {
     bill_title: req.body.bill_title,
     
     items: {
-      descriptions: req.body.descriptions, install_difficulty: req.body.install_difficulty, sla_mla: req.body.sla_mla,maintain_visit: req.body.maintain_visit,
-    validate_num_days: req.body.validate_num_days,
+      descriptions: req.body.descriptions,
+      install_difficulty: req.body.selected_install_difficulty,
+      factor: req.body.selected_factor,
+      sla_mla: req.body.sla_mla,
+      maintain_visit: req.body.maintain_visit,
+      validate_num_days: req.body.validate_num_days,
       stock_code: req.body.stock_code,
       stock_qty: req.body.stock_qty,
       unit_cost: req.body.unit_cost,
@@ -335,7 +321,8 @@ app.post('/addQuote', async (req, res) => {
             
             items: {
               descriptions: req.body.descriptions,
-              install_difficulty: req.body.install_difficulty,
+              install_difficulty: req.body.selected_install_difficulty,
+      factor: req.body.selected_factor,
             sla_mla: req.body.sla_mla,
             maintain_visit: req.body.maintain_visit,
             validate_num_days: req.body.validate_num_days,
@@ -378,7 +365,8 @@ app.post('/addItem', async (req, res) => {
 
       const newItem = {
         descriptions: req.body.descriptions,
-          install_difficulty: req.body.install_difficulty,
+        install_difficulty: req.body.selected_install_difficulty,
+        factor: req.body.selected_factor,
           sla_mla: req.body.sla_mla,
           maintain_visit: req.body.maintain_visit,
           validate_num_days: req.body.validate_num_days,
@@ -426,7 +414,6 @@ app.post('/deleteBilling/:userId/:billingIndex', async (req, res) => {
   }
 });
 
-
 app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
       const { userId, billingIndex, itemIndex } = req.params;
@@ -451,7 +438,7 @@ app.get('/printAllBilling', async (req, res) => {
   try {
     const users = await User.find();
     const billingData = [];
-    const scPrice = 1529.47;
+    const scPrice = 1529.47;// this must be totalPrice for item multiply by 3%
     const pmPrice = 1058.82;
     const iprice = 3150.30;
     const labour_cost = 320;
@@ -467,12 +454,14 @@ app.get('/printAllBilling', async (req, res) => {
             const totalEquipMargin = item.unit_cost / (1 - equipMargin);
 
             const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
-            const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
-            const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
+            const factor = item.factor || 1; 
+
+            const unitLabourMargin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
+            const totalLabourItemMargin = item.stock_qty * item.labour_hrs * factor;
 
             totalLabourMargin += totalLabourItemMargin;
 
-            const itemTotalPrice = item.stock_qty * totalEquipMargin;
+            const itemTotalPrice = item.stock_qty * item.unit_cost;
             billSubtotal += itemTotalPrice;
 
             billingData.push({
@@ -485,6 +474,7 @@ app.get('/printAllBilling', async (req, res) => {
               customer_name: user.customer_name,
               labour_margin: item.labour_margin,
               equip_margin: item.equip_margin,
+              labour_hrs: item.labour_hrs,
               product_type: item.product_type,
               descriptions: item.descriptions,
               stock_code: item.stock_code,
@@ -541,7 +531,7 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 
     const item = billingEntry.items[itemIndex];
     
-    const scPrice = 1529.47;
+    const scPrice = 1529.47;// this must be totalPrice for item multiply by 3%
     const pmPrice = 1058.82;
     const iprice = 3150.30;
     const labour_cost = 320;
@@ -551,7 +541,9 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
     
     const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
     const unit_labour_margin = (labour_cost * 0.3) / (1 - labourMargin);
-    const total_labour_margin = item.stock_qty * unit_labour_margin;
+
+    const factor = item.factor || 1; 
+    const total_labour_margin = item.stock_qty * item.labour_hrs * factor;
     
     const total_price = item.stock_qty * total_equip_margin;
     const sub_total = total_price + total_labour_margin + scPrice + pmPrice + iprice;
@@ -567,7 +559,7 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
       total_equip_margin,
       total_labour_margin,
       total_price,
-      sub_total,
+      sub_total, 
       scPrice,
       pmPrice,
       iprice,
@@ -582,11 +574,11 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 app.get('/api/descriptions/:id', async (req, res) => {
   const { id } = req.params;
   try {
-      const item = await InstallDifficultyType.findById(id, 'factor'); // Fetching factor
+      const item = await InstallDifficultyType.findById(id, 'factor');
       if (!item) {
           return res.status(404).send('Item not found');
       }
-      if (item.factor <= 0) { // Checking if factor is greater than 0
+      if (item.factor <= 0) { 
           return res.status(404).send('Item has 0 factor');
       }
       res.json(item);
@@ -612,7 +604,7 @@ app.get('/overview', async (req, res) => {
       const installDifficultyTypes = await InstallDifficultyType.find();
       const slaMlaTypes = await SlaMlaType.find();
       const validateNumTypes = await ValidateNumType.find();
-      const difficultNumTypes = await difficultNumType.find();
+     
       
       let totalLabourHrs = 0; 
       let totalEquipSell = 0;
@@ -669,7 +661,7 @@ app.get('/overview', async (req, res) => {
       const total_cost_project = totalEquipCost + total_labour_cost + total_cost_sundries + total_cost_project_management;
       const total_sell_project = totalEquipSell + total_labour_sell + total_sell_sundries + total_sell_project_management;
 
-      total_gross_profit = total_sell_project - total_cost_project;
+  
 
       // Calculate VAT (14%)
       const vatPercentage = 14 / 100;
@@ -697,7 +689,6 @@ app.get('/overview', async (req, res) => {
           installDifficultyTypes, // Pass the install difficulty types
           slaMlaTypes,
           validateNumTypes,
-          difficultNumTypes,
           totalLabourHrs, 
           projectDays,     
           projectWeeks,
@@ -738,3 +729,4 @@ const port = 1520;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+ 
