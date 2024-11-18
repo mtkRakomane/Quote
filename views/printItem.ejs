@@ -8,8 +8,7 @@
  
 </head>
 <body>
-    <div class="form-container">
-       
+    <div class="form-container"> 
         <div class="card-right">
             <div class="card-body">
                 <div class="image-text-container">
@@ -65,11 +64,11 @@
                 </tr>
                 <tr>
                     <th>Total Price</th>
-                    <td><%= total_price.toFixed(2) %> </td>
+                    <td>R <%= total_price.toFixed(2) %> </td>
                 </tr>
                 <tr>
                     <th>Labour Cost</th>
-                    <td>R<%=  total_labour_margin.toFixed(2) %></td>
+                    <td>R <%=  total_labour_margin.toFixed(2) %></td>
                 </tr>
                 <tr>
                     <th>Sundries and Consumables:</th>
@@ -85,7 +84,7 @@
                 </tr>
                 <tr>
                     <th>Sub Total</th>
-                    <td>R<%= sub_total.toFixed(2) %></td>
+                    <td>R <%= sub_total.toFixed(2) %></td>
                 </tr>
             </tbody>
         </table>
@@ -136,5 +135,6 @@
       </div>
         <button onclick="window.print()">Print Item</button>
     </div>
+    
 </body>
 </html>
