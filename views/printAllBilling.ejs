@@ -76,51 +76,51 @@
                 </tr>
                 <% 
                     billSubtotal += data.total_price;
-                    totalLabourMargin += data.total_labour_margin; 
+                    totalLabourMargin += data.total_labour_cost; 
                 %>
             <% }) %>
         </tbody>
         <tbody>
-            <tr>
-                <td><strong>Sundries and Consumables:</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><strong>R 1529.47</strong></td>
-            </tr>
-            <tr>
-                <td><strong>Project Management:</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><strong>R 1058.82</strong></td>
-            </tr>
-            <tr>
-                <td><strong>Installation, Commissioning and Engineering:</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><strong>R 3150.30</strong></td>
-            </tr>
-            <tr>
-                <td><strong>Labour:</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><strong>R <%= totalLabourMargin.toFixed(2) %></strong></td>
-            </tr>
-            <tr>
-                <td colspan="4"></td>
-                <td><strong>Subtotal:</strong></td>
-                <td>
-                    <strong>R <%= (billSubtotal + 1529.47 + 1058.82 + 3150.30 + totalLabourMargin).toFixed(2) %></strong>
-                </td>
-            </tr>
+            <% billingData.forEach(function(bill) { %>
+                <!-- Sundries and Consumables -->
+                <tr>
+                    <td><strong>Sundries and Consumables:</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>R <%= bill.total_sundries.toFixed(2) %></strong></td>
+                </tr>
+        
+                <!-- Project Management -->
+                <tr>
+                    <td><strong>Project Management:</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>R <%= bill.total_project_managing.toFixed(2) %></strong></td>
+                </tr>
+        
+                <!-- Installation, Commissioning and Engineering -->
+                <tr>
+                    <td><strong>Installation, Commissioning and Engineering:</strong></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>R <%= bill.total_labour_cost.toFixed(2) %></strong></td>
+                </tr>
+        
+                <!-- Subtotal -->
+                <tr>
+                    <td colspan="4"></td>
+                    <td><strong>Subtotal:</strong></td>
+                    <td><strong>R <%= bill.bill_subtotal.toFixed(2) %></strong></td>
+                </tr>
+            <% }); %>
         </tbody>
+        
     </table>
 <% }) %>
  
