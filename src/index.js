@@ -438,32 +438,40 @@ app.get('/printAllBilling', async (req, res) => {
   try {
     const users = await User.find();
     const billingData = [];
-    const scPrice = 1529.47;// this must be totalPrice for item multiply by 3%
-    const pmPrice = 1058.82;
-    const iprice = 3150.30;
     const labour_cost = 320;
 
+    // Loop over each user
     users.forEach(user => {
       if (user.billing) {
+        // Loop over each billing entry
         user.billing.forEach(bill => {
-          let billSubtotal = 0; 
+          let billSubtotal = 0;
           let totalLabourMargin = 0;
+          let totalSundries = 0;
+          let totalProjectManaging = 0;
 
+          // Loop over each item in the bill
           bill.items.forEach(item => {
             const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
             const totalEquipMargin = item.unit_cost / (1 - equipMargin);
-
             const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
             const factor = item.factor || 1; 
-
             const unitLabourMargin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
-            const totalLabourItemMargin = item.stock_qty * item.labour_hrs * factor;
+            const totalLabourCost = item.stock_qty * item.labour_hrs * factor * unitLabourMargin;
+            totalLabourMargin += totalLabourCost;
+            const itemTotalPrice = item.stock_qty * totalEquipMargin;
 
-            totalLabourMargin += totalLabourItemMargin;
+            // Calculate sundries and project management costs
+            const sundries_cal = itemTotalPrice * 0.03;  // Sundries calculation
+            const project_managing = itemTotalPrice * 0.15;  // Project management calculation
 
-            const itemTotalPrice = item.stock_qty * item.unit_cost;
+            // Accumulate the sundries and project managing costs at the bill level
+            totalSundries += sundries_cal;
+            totalProjectManaging += project_managing;
+
             billSubtotal += itemTotalPrice;
 
+            // Add the item-level data to billingData
             billingData.push({
               bill_title: bill.bill_title,
               ref_num: user.ref_num,
@@ -481,25 +489,36 @@ app.get('/printAllBilling', async (req, res) => {
               stock_qty: item.stock_qty,
               unit_cost: Number(item.unit_cost) || 0,
               total_price: itemTotalPrice,
-              total_labour_margin: totalLabourItemMargin,
+              total_labour_cost: totalLabourCost,
               total_equip_margin: totalEquipMargin,
-              unitLabourMargin:  unitLabourMargin,
+              unitLabourMargin: unitLabourMargin,
+              sundries_cal: sundries_cal,  // Include sundries_cal in the data
+              project_managing: project_managing,  // Include project_managing in the data
             });
           });
-          const itemSubtotal = billSubtotal + totalLabourMargin + scPrice + pmPrice + iprice;
+
+          // Calculate the overall subtotal for the bill
+          const itemSubtotal = billSubtotal + totalLabourMargin + totalSundries + totalProjectManaging;
+
+          // Only update billingData once after all items are processed
           billingData.forEach(data => {
             if (data.bill_title === bill.bill_title) {
-              data.total_labour_margin = totalLabourMargin;
+              data.total_labour_cost = totalLabourMargin;
               data.bill_subtotal = itemSubtotal;
+              data.total_sundries = totalSundries;  // Add total sundries at the bill level
+              data.total_project_managing = totalProjectManaging;  // Add total project management at the bill level
             }
           });
         });
       }
     });
+
+    // Get details of the first salesperson or customer for the page header
     const salesPersonName = billingData.length > 0 ? billingData[0].saleName : '';
     const salesPersonCell = billingData.length > 0 ? billingData[0].cell : '';
     const customerEmail = billingData.length > 0 ? billingData[0].customer_email : '';
 
+    // Render the 'printAllBilling' page with the populated data
     res.render('printAllBilling', { billingData, salesPersonName, salesPersonCell, customerEmail });
   } catch (error) {
     console.error(error);
@@ -510,41 +529,31 @@ app.get('/printAllBilling', async (req, res) => {
 app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
   try {
     const { userId, billingIndex, itemIndex } = req.params;
-
     const user = await User.findById(userId).exec();
-
     if (!user) {
       return res.status(404).send('User not found');
     }
-
     if (billingIndex >= user.billing.length) {
       return res.status(404).send('Billing index out of range');
     }
-
     const billingEntry = user.billing[billingIndex];
 
     if (itemIndex >= billingEntry.items.length) {
       return res.status(404).send('Item index out of range');
     }
-
     const item = billingEntry.items[itemIndex];
-    
-    const scPrice = 1529.47;// this must be totalPrice for item multiply by 3%
-    const pmPrice = 1058.82;// totalprice per item multiply by 15%
-    const iprice = 3150.30;
-
+    const labour_cost = 320;
     const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
     const total_equip_margin = item.unit_cost / (1 - equipMargin);
-    
     const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
     const unit_labour_margin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
-
     const factor = item.factor || 1; 
-    const total_labour_margin = item.stock_qty * item.labour_hrs * factor;
-    
+    const total_labour_cost = item.stock_qty * item.labour_hrs * factor * unit_labour_margin;// MUST RESEARCH ABOUT THIS1
     const total_price = item.stock_qty * total_equip_margin;
-    const sub_total = total_price + total_labour_margin + scPrice + pmPrice + iprice;
-
+    const sundries = total_price * 0.03; 
+    const project_management = total_price * 0.15;
+    const sub_total = total_price + total_labour_cost + sundries + project_management;
+   
     res.render('printItem', {
       user,
       billingEntry,
@@ -554,13 +563,12 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
       labourMargin,
       unit_labour_margin,
       total_equip_margin,
-      total_labour_margin,
+      total_labour_cost,
       total_price,
       sub_total, 
-      scPrice,
-      pmPrice,
-      iprice,
       labour_cost,
+      sundries,
+      project_management
     });
   } catch (error) {
     console.error('Error printing item:', error);
@@ -602,6 +610,7 @@ app.get('/overview', async (req, res) => {
       const slaMlaTypes = await SlaMlaType.find();
       const validateNumTypes = await ValidateNumType.find();
      
+      
       let totalLabourHrs = 0; 
       let totalEquipSell = 0;
       let totalEquipCost = 0;
@@ -637,9 +646,9 @@ app.get('/overview', async (req, res) => {
 
                       const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
                       const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
-                      const totalLabourItemMargin = item.stock_qty * unitLabourMargin;
-                      total_labour_cost += totalLabourItemMargin;
-                      total_labour_sell += totalLabourItemMargin;
+                      const totalLabourCost = item.stock_qty * unitLabourMargin;
+                      total_labour_cost += totalLabourCost;
+                      total_labour_sell += totalLabourCost;
 
                       if (item.labour_hrs) {
                           totalLabourHrs += item.labour_hrs * item.stock_qty; 
@@ -657,21 +666,27 @@ app.get('/overview', async (req, res) => {
       const total_cost_project = totalEquipCost + total_labour_cost + total_cost_sundries + total_cost_project_management;
       const total_sell_project = totalEquipSell + total_labour_sell + total_sell_sundries + total_sell_project_management;
 
+  
+
+      // Calculate VAT (14%)
       const vatPercentage = 14 / 100;
       const total_vat = total_sell_project * vatPercentage;
       const total_sell_with_vat = total_sell_project + total_vat;
 
+      // Calculate GM (gross margin) for each category
       const gmEquip = ((totalEquipSell - totalEquipCost) / totalEquipSell) * 100;
       const gmLabour = ((total_labour_sell - total_labour_cost) / total_labour_sell) * 100;
       const gmSundries = ((total_sell_sundries - total_cost_sundries) / total_sell_sundries) * 100;
       const gmProjectManagement = ((total_sell_project_management - total_cost_project_management) / total_sell_project_management) * 100;
       const gmProject = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
-    
+
+      // Calculate project percentage for each category
       const projectPercentEquip = (totalEquipSell / total_sell_project) * 100;
       const projectPercentLabour = (total_labour_sell / total_sell_project) * 100;
       const projectPercentSundries = (total_sell_sundries / total_sell_project) * 100;
       const projectPercentProjectManagement = (total_sell_project_management / total_sell_project) * 100;
-    
+
+      // Actual Gross Margin calculation
       const actualGrossMargin = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
 
       res.render('overview', {
@@ -707,6 +722,7 @@ app.get('/overview', async (req, res) => {
           actualGrossMargin,  
           iprice 
       });
+
   } catch (error) {
       console.error('Error fetching data for overview:', error);
       res.status(500).send('Error fetching data for overview');
