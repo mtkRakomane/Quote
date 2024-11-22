@@ -168,14 +168,12 @@ app.post('/login', async (req, res) => {
 app.get('/updateBilling/:userId/:billingIndex', async (req, res) => {
   try {
     const { userId, billingIndex } = req.params;
-
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).send('Invalid user ID');
     }
     if (isNaN(billingIndex) || billingIndex < 0) {
       return res.status(400).send('Invalid billing index');
     }
-
     const user = await User.findById(userId).exec();
     if (!user) {
       return res.status(404).send('User not found');
@@ -186,7 +184,22 @@ app.get('/updateBilling/:userId/:billingIndex', async (req, res) => {
       return res.status(404).send('Billing entry not found');
     }
 
-    res.render('updateBilling', { user, billing, billingIndex });
+    const productTypes = await ProductType.find().exec();
+    const installDifficultyTypes = await InstallDifficultyType.find().exec();
+    const slaMlaTypes = await SlaMlaType.find().exec();
+    const validateNumTypes = await ValidateNumType.find().exec();
+    const supplyTypes = await SupplyType.find().exec();
+
+    res.render('updateBilling', { 
+      user, 
+      billing, 
+      billingIndex, 
+      productTypes,
+      installDifficultyTypes,
+      slaMlaTypes,
+      validateNumTypes,
+      supplyTypes,
+    });
   } catch (error) {
     console.error('Error loading update page:', error);
     res.status(500).send('Error loading update page');
@@ -196,44 +209,10 @@ app.get('/updateBilling/:userId/:billingIndex', async (req, res) => {
 app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
   try {
     const { userId, billingIndex } = req.params;
-    const { bill_title, items } = req.body;
-
-    if (!bill_title || typeof bill_title !== 'string') {
-      return res.status(400).send('Missing or invalid billing title');
-    }
-
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).send('Missing or invalid items array');
-    }
-
-    for (const [index, item] of items.entries()) {
-      const {
-        descriptions,
-        install_difficulty,
-        sla_mla,
-        maintain_visit,
-        validate_num_days,
-        stock_code,
-        stock_qty,
-        unit_cost,
-        product_type,
-        equip_margin,
-        labour_margin,
-        labour_hrs,
-        maintenance_hrs,
-        supplier
-      } = item;
-
-      if (!install_difficulty || !sla_mla || !maintain_visit || !validate_num_days ||
-          !stock_code || stock_qty || !unit_cost || !product_type ||
-          !equip_margin || !labour_margin || !labour_hrs || !maintenance_hrs || !supplier || !descriptions) {
-        return res.status(400).send(`Missing required fields in item at index ${index}`);
-      }
-    }
-
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).send('Invalid user ID');
     }
+
     if (isNaN(billingIndex) || billingIndex < 0) {
       return res.status(400).send('Invalid billing index');
     }
@@ -248,31 +227,48 @@ app.post('/updateBilling/:userId/:billingIndex', async (req, res) => {
       return res.status(404).send('Billing entry not found');
     }
 
-    billing.bill_title = bill_title;
+    // Get the updated data from the form
+    const {
+      bill_title,
+      customer_name,
+      customer_call_person,
+      customer_email,
+      items // This should be an array of items from the form
+    } = req.body;
 
-    billing.items = items.map((item) => ({
-      descriptions: item.descriptions,
-      install_difficulty: item.install_difficulty,
-      sla_mla: item.sla_mla,
-      maintain_visit: item.maintain_visit,
-      validate_num_days: item.validate_num_days,
-      stock_code: item.stock_code,
-      stock_qty: item.stock_qty,
-      unit_cost: item.unit_cost,
-      product_type: item.product_type,
-      equip_margin: item.equip_margin,
-      labour_margin: item.labour_margin,
-      labour_hrs: item.labour_hrs,
-      maintenance_hrs: item.maintenance_hrs,
-      supplier: item.supplier
-    }));
+    // Make sure items is an array before attempting to map
+    if (!Array.isArray(items)) {
+      return res.status(400).send('Invalid items array');
+    }
 
-    await user.save();
+    // Update the billing entry with the new values, including the updated items array
+    user.billing[billingIndex] = {
+      ...billing,
+      bill_title,
+      customer_name,
+      customer_call_person,
+      customer_email,
+      items: items.map(item => ({
+        descriptions: item.descriptions,
+        install_difficulty: item.install_difficulty,
+        stock_code: item.stock_code,
+        stock_qty: item.stock_qty,
+        unit_cost: item.unit_cost,
+        product_type: item.product_type,
+        equip_margin: item.equip_margin,
+        labour_margin: item.labour_margin,
+        labour_hrs: item.labour_hrs,
+        maintenance_hrs: item.maintenance_hrs,
+        supplier: item.supplier
+      }))
+    };
 
-    res.redirect('/');
+    await user.save(); // Save the updated user data back to MongoDB
+
+    res.redirect(`/updateBilling/${userId}/${billingIndex}`); // Redirect to the same page to see the updated data
   } catch (error) {
-    console.error('Error updating billing:', error.message);
-    res.status(500).send(`Error updating billing: ${error.message}`);
+    console.error('Error updating billing:', error);
+    res.status(500).send('Error updating billing');
   }
 });
 
@@ -436,50 +432,52 @@ app.post('/deleteItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
 
 app.get('/printAllBilling', async (req, res) => {
   try {
+    const { ref_num } = req.query; // Get the ref_num from the query parameters (e.g., ?ref_num=12345)
     const users = await User.find();
     const billingData = [];
     const labour_cost = 320;
 
-    // Loop over each user
+    // Iterate through users and their billing data
     users.forEach(user => {
       if (user.billing) {
-        // Loop over each billing entry
         user.billing.forEach(bill => {
+          // Only proceed if ref_num is provided and it matches the current bill's ref_num
+          if (ref_num && bill.ref_num !== ref_num) {
+            return; // Skip this bill if the ref_num does not match
+          }
+
           let billSubtotal = 0;
           let totalLabourMargin = 0;
           let totalSundries = 0;
           let totalProjectManaging = 0;
 
-          // Loop over each item in the bill
+          // Process each item in the bill
           bill.items.forEach(item => {
             const equipMargin = item.equip_margin ? item.equip_margin / 100 : 0;
             const totalEquipMargin = item.unit_cost / (1 - equipMargin);
             const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
-            const factor = item.factor || 1; 
+            const factor = item.factor || 1;
             const unitLabourMargin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
-            const totalLabourCost = item.stock_qty * item.labour_hrs * factor * unitLabourMargin;
+            const totalLabourCost = parseFloat((item.stock_qty * item.labour_hrs * factor ).toFixed(2));
             totalLabourMargin += totalLabourCost;
-            const itemTotalPrice = item.stock_qty * totalEquipMargin;
+            const itemTotalPrice = parseFloat((item.stock_qty * totalEquipMargin).toFixed(2));
 
-            // Calculate sundries and project management costs
-            const sundries_cal = itemTotalPrice * 0.03;  // Sundries calculation
-            const project_managing = itemTotalPrice * 0.15;  // Project management calculation
+            const sundries_cal = parseFloat((itemTotalPrice * 0.03).toFixed(2));  // 3% for Sundries
+            const project_managing = parseFloat((itemTotalPrice * 0.15).toFixed(2));  // 15% for Project Management
 
-            // Accumulate the sundries and project managing costs at the bill level
             totalSundries += sundries_cal;
             totalProjectManaging += project_managing;
 
             billSubtotal += itemTotalPrice;
 
-            // Add the item-level data to billingData
             billingData.push({
               bill_title: bill.bill_title,
               ref_num: user.ref_num,
               customer_email: user.email,
               saleName: user.saleName,
               cell: user.cell,
-              customer_email: user.customer_email,
               customer_name: user.customer_name,
+              customer_email: user.customer_email,
               labour_margin: item.labour_margin,
               equip_margin: item.equip_margin,
               labour_hrs: item.labour_hrs,
@@ -487,38 +485,41 @@ app.get('/printAllBilling', async (req, res) => {
               descriptions: item.descriptions,
               stock_code: item.stock_code,
               stock_qty: item.stock_qty,
-              unit_cost: Number(item.unit_cost) || 0,
+              unit_cost: parseFloat((Number(item.unit_cost) || 0).toFixed(2)),
               total_price: itemTotalPrice,
               total_labour_cost: totalLabourCost,
-              total_equip_margin: totalEquipMargin,
-              unitLabourMargin: unitLabourMargin,
-              sundries_cal: sundries_cal,  // Include sundries_cal in the data
-              project_managing: project_managing,  // Include project_managing in the data
+              total_equip_margin: parseFloat((totalEquipMargin).toFixed(2)),
+              unitLabourMargin: parseFloat((unitLabourMargin).toFixed(2)),
+              sundries_cal: sundries_cal,
+              project_managing: project_managing,
             });
           });
-
-          // Calculate the overall subtotal for the bill
-          const itemSubtotal = billSubtotal + totalLabourMargin + totalSundries + totalProjectManaging;
-
-          // Only update billingData once after all items are processed
+          
+          // Calculate the subtotal and additional costs
+          const itemSubtotal = parseFloat((billSubtotal + totalLabourMargin + totalSundries + totalProjectManaging).toFixed(2));
           billingData.forEach(data => {
             if (data.bill_title === bill.bill_title) {
               data.total_labour_cost = totalLabourMargin;
               data.bill_subtotal = itemSubtotal;
-              data.total_sundries = totalSundries;  // Add total sundries at the bill level
-              data.total_project_managing = totalProjectManaging;  // Add total project management at the bill level
+              data.total_sundries = totalSundries;
+              data.total_project_managing = totalProjectManaging;
             }
           });
         });
       }
     });
 
-    // Get details of the first salesperson or customer for the page header
+    // If no billing data matches the ref_num, return an error message
+    if (billingData.length === 0) {
+      return res.status(404).send('No billing data found for the given reference number');
+    }
+
+    // Render only the filtered billing data
     const salesPersonName = billingData.length > 0 ? billingData[0].saleName : '';
     const salesPersonCell = billingData.length > 0 ? billingData[0].cell : '';
     const customerEmail = billingData.length > 0 ? billingData[0].customer_email : '';
 
-    // Render the 'printAllBilling' page with the populated data
+    // Render the page with the filtered billing data
     res.render('printAllBilling', { billingData, salesPersonName, salesPersonCell, customerEmail });
   } catch (error) {
     console.error(error);
@@ -548,7 +549,7 @@ app.get('/printItem/:userId/:billingIndex/:itemIndex', async (req, res) => {
     const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
     const unit_labour_margin = (labour_cost * (0.3 /* ProductType */)) / (1 - labourMargin);
     const factor = item.factor || 1; 
-    const total_labour_cost = item.stock_qty * item.labour_hrs * factor * unit_labour_margin;// MUST RESEARCH ABOUT THIS1
+    const total_labour_cost = item.stock_qty * item.labour_hrs * factor;// MUST RESEARCH ABOUT THIS1
     const total_price = item.stock_qty * total_equip_margin;
     const sundries = total_price * 0.03; 
     const project_management = total_price * 0.15;
@@ -631,9 +632,9 @@ app.get('/overview', async (req, res) => {
       users.forEach(user => {
           if (user.billing) {
               user.billing.forEach(bill => {
-                  total_cost_sundries += scPrice; 
+                  total_cost_sundries += scPrice * 0.54; // check for the cost and selling calcualtions 
                   total_sell_sundries += scPrice; 
-                  total_cost_project_management += pmPrice;
+                  total_cost_project_management += pmPrice * 0.65;
                   total_sell_project_management += pmPrice;
 
                   bill.items.forEach(item => {
@@ -641,13 +642,13 @@ app.get('/overview', async (req, res) => {
                       const totalEquipMargin = item.unit_cost / (1 - equipMargin);
                       const totalPriceSell = item.stock_qty * totalEquipMargin;
                       totalEquipSell += totalPriceSell;
-                      const totalPriceCost = item.stock_qty * item.unit_cost;
+                      const totalPriceCost = item.stock_qty * totalEquipMargin * 0.80; // must check for costs and selling how they differ
                       totalEquipCost += totalPriceCost;
 
                       const labourMargin = item.labour_margin ? item.labour_margin / 100 : 0;
                       const unitLabourMargin = (labour_cost * 0.3) / (1 - labourMargin);
                       const totalLabourCost = item.stock_qty * unitLabourMargin;
-                      total_labour_cost += totalLabourCost;
+                      total_labour_cost += totalLabourCost * 0.60;// must check for how they calculated the costs and selling
                       total_labour_sell += totalLabourCost;
 
                       if (item.labour_hrs) {
@@ -685,6 +686,8 @@ app.get('/overview', async (req, res) => {
       const projectPercentLabour = (total_labour_sell / total_sell_project) * 100;
       const projectPercentSundries = (total_sell_sundries / total_sell_project) * 100;
       const projectPercentProjectManagement = (total_sell_project_management / total_sell_project) * 100;
+
+       total_gross_profit = (total_sell_project- total_cost_project );
 
       // Actual Gross Margin calculation
       const actualGrossMargin = ((total_sell_project - total_cost_project) / total_sell_project) * 100;
