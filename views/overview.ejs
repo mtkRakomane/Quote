@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 </head>
-
 <body>
     <div class="container-fluid pt-5 mt-3">
         <% users.forEach(user => { %>
@@ -73,7 +71,7 @@
                                 <td>Total Gross Profit</td>
                                 <td><strong> R <span id="total_gross_profit"><%= total_gross_profit.toFixed(2) %></span></strong></td>
                             </tr>
-                            <tr>
+                            <tr> 
                                 <td>Actual Gross Margin %</td>
                                 <td>
                                     <% 
@@ -94,7 +92,6 @@
                             </tr>
                            </tbody>
                         </table>
-
                         <table >
                             <thead>
                                 <th
@@ -122,7 +119,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-7">
                 <div class="card-main">
                     <div class="card-body">
@@ -169,7 +165,7 @@
                                     <td></td>
                                     <td>R</td>
                                     <td></td>
-                                    <td><%= gmSundries.toFixed(2) %>%</td>
+                                    <td>%</td>
                                     <td></td>
                                     <td>%</td>
                                 </tr>
@@ -179,7 +175,7 @@
                                     <td></td>
                                     <td>R <%= total_sell_sundries.toFixed(2) %></td>
                                     <td></td>
-                                    <td><%= gmProjectManagement.toFixed(2) %>%</td>
+                                    <td><%= gmSundries.toFixed(2) %>%</td>
                                     <td></td>
                                     <td><%= projectPercentSundries.toFixed(2) %>%</td>
                                 </tr>
@@ -205,9 +201,7 @@
                                 </tr>
                             </tbody>
                         </table>
-            
                         <hr>
-            
                         <table>
                             <thead>
                                 <tr>
@@ -245,9 +239,7 @@
                                 </tr>
                             </tbody>
                         </table>
-            
                         <hr>
-            
                         <form action="checkbox" method="POST">
                             <table>
                                 <thead>
@@ -306,7 +298,6 @@
                     </div>
                 </div>
             </div>
-              
     </div>
     <div class="footer">
         <footer class="container d-flex justify-content-between align-items-center">
@@ -321,6 +312,8 @@
     </div>    
     <% }) %>
     </div>
+  
+   </script>
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
