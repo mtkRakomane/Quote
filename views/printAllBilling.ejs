@@ -64,6 +64,8 @@
         <tbody>
             <% let billSubtotal = 0; %>
             <% let totalLabourMargin = 0; %>
+            <% let totalSundries = 0; %>
+            <% let totalProjectManaging = 0; %>
 
             <% groupedData[billTitle].forEach(function(data) { %>
                 <tr>
@@ -71,58 +73,54 @@
                     <td> <%= data.product_type %> </td>
                     <td> <%= data.descriptions %> </td>
                     <td> <%= data.stock_qty %> </td>
-                    <td>R <%= data.unit_cost.toFixed(2) %> </td>
-                    <td>R <%= data.total_price.toFixed(2) %> </td>
+                    <td>R <%= data. total_equip_margin %> </td>
+                    <td>R <%= data.total_price %> </td>
                 </tr>
                 <% 
                     billSubtotal += data.total_price;
-                    totalLabourMargin += data.total_labour_cost; 
+                    totalLabourMargin += data.total_labour_cost;
+                    totalSundries += data.sundries_cal;
+                    totalProjectManaging += data.project_managing;
                 %>
             <% }) %>
         </tbody>
+        
+        <!-- These values will now only show up once per bill_title -->
         <tbody>
-            <% billingData.forEach(function(bill) { %>
-                <!-- Sundries and Consumables -->
-                <tr>
-                    <td><strong>Sundries and Consumables:</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><strong>R <%= bill.total_sundries.toFixed(2) %></strong></td>
-                </tr>
-        
-                <!-- Project Management -->
-                <tr>
-                    <td><strong>Project Management:</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><strong>R <%= bill.total_project_managing.toFixed(2) %></strong></td>
-                </tr>
-        
-                <!-- Installation, Commissioning and Engineering -->
-                <tr>
-                    <td><strong>Installation, Commissioning and Engineering:</strong></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><strong>R <%= bill.total_labour_cost.toFixed(2) %></strong></td>
-                </tr>
-        
-                <!-- Subtotal -->
-                <tr>
-                    <td colspan="4"></td>
-                    <td><strong>Subtotal:</strong></td>
-                    <td><strong>R <%= bill.bill_subtotal.toFixed(2) %></strong></td>
-                </tr>
-            <% }); %>
+            <tr>
+                <td><strong>Sundries and Consumables:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R <%= totalSundries.toFixed(2) %></strong></td>
+            </tr>
+            <tr>
+                <td><strong>Project Management:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R <%= totalProjectManaging.toFixed(2) %></strong></td>
+            </tr>
+            <tr>
+                <td><strong>Installation, Commissioning and Engineering:</strong></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>R <%= totalLabourMargin.toFixed(2) %></strong></td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td><strong>Subtotal:</strong></td>
+                <td><strong>R <%= (billSubtotal + totalLabourMargin + totalSundries + totalProjectManaging).toFixed(2) %></strong></td>
+            </tr>
         </tbody>
         
     </table>
 <% }) %>
+
  
       <p>Terms and Conditions</p>
       <div class="terms">
